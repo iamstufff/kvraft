@@ -1,0 +1,81 @@
+# 3-node kvraft cluster + Prometheus + Grafana.
+# Skeleton only — Day 2 will refine raft port wiring and volumes.
+
+services:
+  node1:
+    build: .
+    container_name: kvraft-node1
+    environment:
+      NODE_ID: node1
+      RAFT_BIND: 0.0.0.0:4321
+      RAFT_PEERS: node2:4321,node3:4321
+      GEMINI_API_KEY: ${GEMINI_API_KEY:?set GEMINI_API_KEY in .env}
+      SIMILARITY_THRESHOLD: "0.85"
+      EMBEDDING_MODEL: sentence-transformers/all-MiniLM-L6-v2
+    ports:
+      - "8001:8000"
+    networks: [kvraft-net]
+    volumes:
+      - node1-data:/app/data
+
+  node2:
+    build: .
+    container_name: kvraft-node2
+    environment:
+      NODE_ID: node2
+      RAFT_BIND: 0.0.0.0:4321
+      RAFT_PEERS: node1:4321,node3:4321
+      GEMINI_API_KEY: ${GEMINI_API_KEY:?set GEMINI_API_KEY in .env}
+      SIMILARITY_THRESHOLD: "0.85"
+      EMBEDDING_MODEL: sentence-transformers/all-MiniLM-L6-v2
+    ports:
+      - "8002:8000"
+    networks: [kvraft-net]
+    volumes:
+      - node2-data:/app/data
+
+  node3:
+    build: .
+    container_name: kvraft-node3
+    environment:
+      NODE_ID: node3
+      RAFT_BIND: 0.0.0.0:4321
+      RAFT_PEERS: node1:4321,node2:4321
+      GEMINI_API_KEY: ${GEMINI_API_KEY:?set GEMINI_API_KEY in .env}
+      SIMILARITY_THRESHOLD: "0.85"
+      EMBEDDING_MODEL: sentence-transformers/all-MiniLM-L6-v2
+    ports:
+      - "8003:8000"
+    networks: [kvraft-net]
+    volumes:
+      - node3-data:/app/data
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: kvraft-prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    networks: [kvraft-net]
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: kvraft-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - "3000:3000"
+    networks: [kvraft-net]
+    volumes:
+      - ./monitoring/grafana:/var/lib/grafana/dashboards:ro
+    depends_on: [prometheus]
+
+networks:
+  kvraft-net:
+    driver: bridge
+
+volumes:
+  node1-data:
+  node2-data:
+  node3-data:

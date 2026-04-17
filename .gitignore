@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.eggs/
+*.egg-info/
+*.egg
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# uv
+.uv-cache/
+
+# Secrets
+.env
+.env.local
+*.key
+*.pem
+
+# Docker volumes / data
+data/
+*.sqlite
+*.db
+
+# Logs
+*.log
+logs/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Benchmark outputs — committed only on Day 3 release
+benchmarks/results/*.png
+benchmarks/results/*.csv
+!benchmarks/results/.gitkeep
+
+# Raft on-disk state
+*.raft
+raft-journal/
+
+# Docker build cache
+.dockerignore-local
