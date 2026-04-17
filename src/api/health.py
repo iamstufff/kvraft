@@ -1,10 +1,8 @@
 """Health-check API routes."""
 
-from os import getenv
-
 from fastapi import APIRouter
 
-DEFAULT_NODE_ID = "node-1"
+from src.config import get_settings
 
 router = APIRouter()
 
@@ -12,7 +10,7 @@ router = APIRouter()
 def get_node_id() -> str:
     """Return the node identifier for the current process."""
 
-    return getenv("NODE_ID", DEFAULT_NODE_ID)
+    return get_settings().node_id
 
 
 @router.get("/health")

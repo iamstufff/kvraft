@@ -1,4 +1,5 @@
-from src.api.health import DEFAULT_NODE_ID, get_node_id, health
+from src.api.health import get_node_id, health
+from src.config import DEFAULT_NODE_ID
 
 
 def test_get_node_id_returns_default(monkeypatch) -> None:
