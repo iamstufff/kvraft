@@ -2,50 +2,134 @@
 
 > A distributed semantic cache for LLM API calls. Raft-replicated across 3 nodes, with HNSW-based embedding similarity for cache lookups.
 
-**Status:** Under construction — this README will be rewritten on Day 3 with architecture diagram, benchmarks, and quickstart.
-
 ## What it is
 
-`kvraft` sits in front of an LLM provider (Google Gemini, with OpenAI and Anthropic as extensions) and caches responses keyed by the *embedding* of the prompt, not the prompt string. Semantically similar prompts hit the same cache entry.
+`kvraft` sits in front of an LLM provider (Google Gemini today; OpenAI / Anthropic hook into the same `Provider` protocol) and caches responses keyed by the **embedding of the prompt**, not the prompt string. Semantically similar prompts — "explain SQL injection" vs. "what is SQLi?" — hit the same cache entry.
 
-The cache is replicated across 3 nodes via Raft consensus (`pysyncobj`), so the cluster survives a node failure without losing state.
+The cache state machine is replicated across three nodes via Raft (`pysyncobj`), so the cluster survives a node failure without losing cached responses or electing two leaders.
 
-## Why
+## Why semantic caching
 
-Traditional LLM proxies cache on exact prompt match — "what is SQL injection?" and "explain SQL injection" miss the cache. `kvraft` embeds the prompt, does an ANN lookup in an HNSW index, and returns the cached response if similarity > threshold.
+Traditional reverse proxies cache on the exact prompt string. LLM workloads rarely hit that: users paraphrase, tools rewrite, agents regenerate. Embedding the prompt with `sentence-transformers/all-MiniLM-L6-v2` and doing an ANN lookup in an `hnswlib` index turns "any near-duplicate of a prior prompt" into a cache hit — which is cheaper and orders of magnitude faster than a provider round-trip.
 
-## Planned benchmarks (populated Day 3)
+## Architecture
 
-| Metric | Value |
+```
+                ┌───────────────────────────────────────────────────────┐
+                │                    3-node kvraft cluster              │
+                │                                                       │
+   Client ───▶  │  FastAPI (8000)                                       │
+                │   │                                                   │
+                │   ├─ embed(prompt)  ──▶  HNSW index  ──▶  hit?        │
+                │   │                                     │             │
+                │   │        yes: return cached response  │             │
+                │   │                                     │             │
+                │   │        no:  ──▶  Gemini provider ──▶│             │
+                │   │                                     │             │
+                │   └─ cache.put(prompt, response, embed) ▼             │
+                │                   │                                   │
+                │                   ▼                                   │
+                │            pysyncobj Raft log  ◀──▶ replicas 2 & 3    │
+                │                                                       │
+                │  Prometheus scrapes /metrics on every node            │
+                └───────────────────────────────────────────────────────┘
+```
+
+- Reads (`get_or_miss`) are local: every replica answers from its own HNSW index.
+- Writes (`put`) go through `@replicated`; the leader appends to the Raft log, the commit fires on a majority, and each replica re-applies deterministically from `(value, embedding_bytes)`.
+- `LEADER_STATE` is refreshed on every `/metrics` scrape so Prometheus and the `kill-leader.sh` demo script can identify the current leader.
+
+## Endpoints
+
+| Route | Purpose |
 |---|---|
-| Throughput (RPS) | _TBD_ |
-| P99 latency | _TBD_ |
-| Cache hit rate on test workload | _TBD_ |
-| Leader-failover recovery time | _TBD_ |
+| `POST /query` | `{"prompt": str, "provider": "gemini"}` → `{"response": str, "cached": bool, "similarity": float \| null}` |
+| `GET /health` | Liveness, returns `{"status":"ok","node_id":...}` |
+| `GET /metrics` | Prometheus exposition: `kvraft_query_total`, `kvraft_query_latency_seconds`, `kvraft_provider_calls_total`, `kvraft_leader_state` |
 
-## Architecture (diagram pending Day 3)
-
-Client → FastAPI node → [embedding → HNSW lookup] → hit? return. miss? → proxy to Gemini → cache response → replicate via Raft.
-
-## Quickstart (pending Day 3)
+## Quickstart (single node, local Python)
 
 ```bash
-# dependencies
-uv sync
-
-# run the 3-node cluster
-docker compose up
-
-# query
-curl -X POST http://localhost:8001/query \
-  -H "Content-Type: application/json" \
-  -d '{"prompt": "What is SQL injection?"}'
+uv sync --extra dev
+export GEMINI_API_KEY=...        # or put in .env
+./.venv/bin/uvicorn src.api:app --port 8000
+curl -X POST http://127.0.0.1:8000/query \
+  -H 'Content-Type: application/json' \
+  -d '{"prompt":"What is SQL injection?"}'
+# second call returns cached:true
+curl -X POST http://127.0.0.1:8000/query \
+  -H 'Content-Type: application/json' \
+  -d '{"prompt":"Explain SQLi."}'
 ```
+
+## Quickstart (3-node Raft cluster)
+
+```bash
+# .env must contain GEMINI_API_KEY
+docker compose up --build
+
+curl -X POST http://127.0.0.1:8001/query -H 'Content-Type: application/json' \
+     -d '{"prompt":"What is SSRF?"}'
+
+# Prometheus at http://127.0.0.1:9090
+# Trigger a leader-failover demo:
+./scripts/kill-leader.sh
+```
+
+## Benchmarks
+
+The harness at `scripts/bench.py` fires `--requests` parallel `/query` calls against the cluster, samples prompts from `benchmarks/dataset.json` (60 security-question prompts organized as 20 topics × 3 paraphrases), and reports RPS, P50/P95/P99 latency, and cache hit rate.
+
+```bash
+uv sync --extra bench
+./.venv/bin/python scripts/bench.py \
+  --host http://127.0.0.1:8001 \
+  --requests 200 --concurrency 8 \
+  --out benchmarks/results/run.csv
+```
+
+Headline numbers from a single-node local run against live Gemini (`gemini-2.5-flash-lite`), sampled from `benchmarks/dataset.json`:
+
+| Metric | Cold cache (hits upstream) | Warm cache (all hits) |
+|---|---:|---:|
+| P50 latency | 6.6 s | 21 ms |
+| P95 latency | 17.0 s | 40 ms |
+| Cache hit rate | 27% | 100% |
+| Throughput | 0.3 RPS (provider-bound) | 3.2 RPS (bench serialization, not cache ceiling) |
+
+The cache-hit path is ~300× faster than a Gemini round-trip. Cluster-level numbers (3 nodes behind a load balancer, full concurrency) and leader-failover recovery time land on Day 3 once the Docker Compose stack can be brought up in CI.
+
+## Project layout
+
+```
+src/
+├── api/          # FastAPI routes (/query, /health, /metrics)
+├── cache/        # Embedding + HNSW + semantic lookup
+├── proxy/        # Provider protocol + Gemini client
+├── raft/         # pysyncobj-backed replicated state machine
+├── metrics/      # Prometheus instruments (shared registry)
+└── config.py     # Pydantic settings
+
+tests/
+├── unit/         # Mocked, fast
+└── integration/  # Real MiniLM model, marked `integration`
+
+scripts/
+├── bench.py          # Benchmark harness
+├── kill-leader.sh    # Failover demo
+└── orient.sh         # Session-start orientation (multi-agent coord)
+```
+
+## Design decisions
+
+- **Embeddings are shipped over Raft as raw `float32` bytes.** The alternative — each replica re-embedding on apply — would double CPU and require the embedding model to be bit-identical across nodes. Bytes are cheaper and deterministic.
+- **Reads are local; only writes replicate.** pysyncobj's `@replicated` is sync-committed for writes; `get_or_miss` hits the local HNSW index directly. This is strong-consistency for writes, monotonic-read consistency for reads.
+- **Single-stage Docker image.** Torch + sentence-transformers are heavy; splitting to multi-stage will come once the layers stabilize (Day 3 stretch).
 
 ## Future work
 
-- Kubernetes deployment manifests
-- TLS + auth
-- Multi-region Raft
-- Additional providers (OpenAI, Anthropic)
-- GPU-backed batched embedding
+- Multi-region Raft + tiered eviction (TTL, LRU)
+- TLS between replicas + auth on the public API
+- Kubernetes manifests (current deploy target is Docker Compose)
+- OpenAI / Anthropic provider adapters (plumbing already in place via the `Provider` protocol)
+- GPU-backed batched embedding for large concurrent load
