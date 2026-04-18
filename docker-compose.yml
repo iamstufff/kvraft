@@ -1,81 +1,60 @@
-# 3-node kvraft cluster + Prometheus + Grafana.
-# Skeleton only — Day 2 will refine raft port wiring and volumes.
+# 3-node kvraft cluster + Prometheus.
+# Each node advertises its service-name:4321 as its Raft address so the
+# other replicas can dial it over the Compose network.
 
 services:
-  node1:
+  kvraft-1:
     build: .
-    container_name: kvraft-node1
+    container_name: kvraft-1
+    hostname: kvraft-1
     environment:
-      NODE_ID: node1
-      RAFT_BIND: 0.0.0.0:4321
-      RAFT_PEERS: node2:4321,node3:4321
+      NODE_ID: node-1
+      RAFT_BIND: kvraft-1:4321
+      RAFT_PEERS: '["kvraft-2:4321","kvraft-3:4321"]'
       GEMINI_API_KEY: ${GEMINI_API_KEY:?set GEMINI_API_KEY in .env}
       SIMILARITY_THRESHOLD: "0.85"
-      EMBEDDING_MODEL: sentence-transformers/all-MiniLM-L6-v2
     ports:
       - "8001:8000"
     networks: [kvraft-net]
-    volumes:
-      - node1-data:/app/data
 
-  node2:
+  kvraft-2:
     build: .
-    container_name: kvraft-node2
+    container_name: kvraft-2
+    hostname: kvraft-2
     environment:
-      NODE_ID: node2
-      RAFT_BIND: 0.0.0.0:4321
-      RAFT_PEERS: node1:4321,node3:4321
+      NODE_ID: node-2
+      RAFT_BIND: kvraft-2:4321
+      RAFT_PEERS: '["kvraft-1:4321","kvraft-3:4321"]'
       GEMINI_API_KEY: ${GEMINI_API_KEY:?set GEMINI_API_KEY in .env}
       SIMILARITY_THRESHOLD: "0.85"
-      EMBEDDING_MODEL: sentence-transformers/all-MiniLM-L6-v2
     ports:
       - "8002:8000"
     networks: [kvraft-net]
-    volumes:
-      - node2-data:/app/data
 
-  node3:
+  kvraft-3:
     build: .
-    container_name: kvraft-node3
+    container_name: kvraft-3
+    hostname: kvraft-3
     environment:
-      NODE_ID: node3
-      RAFT_BIND: 0.0.0.0:4321
-      RAFT_PEERS: node1:4321,node2:4321
+      NODE_ID: node-3
+      RAFT_BIND: kvraft-3:4321
+      RAFT_PEERS: '["kvraft-1:4321","kvraft-2:4321"]'
       GEMINI_API_KEY: ${GEMINI_API_KEY:?set GEMINI_API_KEY in .env}
       SIMILARITY_THRESHOLD: "0.85"
-      EMBEDDING_MODEL: sentence-transformers/all-MiniLM-L6-v2
     ports:
       - "8003:8000"
     networks: [kvraft-net]
-    volumes:
-      - node3-data:/app/data
 
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.53.0
     container_name: kvraft-prometheus
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     ports:
       - "9090:9090"
     networks: [kvraft-net]
-
-  grafana:
-    image: grafana/grafana:latest
-    container_name: kvraft-grafana
-    environment:
-      GF_SECURITY_ADMIN_PASSWORD: admin
-    ports:
-      - "3000:3000"
-    networks: [kvraft-net]
-    volumes:
-      - ./monitoring/grafana:/var/lib/grafana/dashboards:ro
-    depends_on: [prometheus]
+    depends_on: [kvraft-1, kvraft-2, kvraft-3]
 
 networks:
   kvraft-net:
     driver: bridge
-
-volumes:
-  node1-data:
-  node2-data:
-  node3-data:
