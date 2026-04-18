@@ -64,6 +64,10 @@ curl -X POST http://127.0.0.1:8000/query \
 
 ## Quickstart (3-node Raft cluster)
 
+Two paths, depending on whether Docker is available. Both produce the same behavior — three FastAPI servers on 8001/8002/8003 replicating cache writes via pysyncobj Raft on 4321/4322/4323.
+
+### Docker (preferred for CI / demo)
+
 ```bash
 # .env must contain GEMINI_API_KEY
 docker compose up --build
@@ -75,6 +79,17 @@ curl -X POST http://127.0.0.1:8001/query -H 'Content-Type: application/json' \
 # Trigger a leader-failover demo:
 ./scripts/kill-leader.sh
 ```
+
+### Local processes (no Docker required)
+
+```bash
+./scripts/run-local-cluster.sh        # spawns 3 uvicorn processes
+curl -X POST http://127.0.0.1:8001/query -H 'Content-Type: application/json' \
+     -d '{"prompt":"What is SSRF?"}'
+./scripts/kill-local-leader.sh        # kill -9 the leader, time re-election
+```
+
+PIDs and per-node logs land under `/tmp/kvraft-local/`.
 
 ## Benchmarks
 
@@ -88,16 +103,19 @@ uv sync --extra bench
   --out benchmarks/results/run.csv
 ```
 
-Headline numbers from a single-node local run against live Gemini (`gemini-2.5-flash-lite`), sampled from `benchmarks/dataset.json`:
+Headline numbers from a live run against `gemini-2.5-flash-lite`, sampled from `benchmarks/dataset.json`:
 
-| Metric | Cold cache (hits upstream) | Warm cache (all hits) |
-|---|---:|---:|
-| P50 latency | 6.6 s | 21 ms |
-| P95 latency | 17.0 s | 40 ms |
-| Cache hit rate | 27% | 100% |
-| Throughput | 0.3 RPS (provider-bound) | 3.2 RPS (bench serialization, not cache ceiling) |
+| Metric | Single-node cold (upstream) | Single-node warm | **3-node cluster, warm** |
+|---|---:|---:|---:|
+| P50 latency | 6.6 s | 21 ms | **38 ms** |
+| P95 latency | 17.0 s | 40 ms | **58 ms** |
+| P99 latency | — | — | **58 ms** |
+| Cache hit rate | 27 % | 100 % | **100 %** |
+| Throughput | 0.3 RPS (provider-bound) | 3.2 RPS | **198 RPS** (c=8) |
 
-The cache-hit path is ~300× faster than a Gemini round-trip. Cluster-level numbers (3 nodes behind a load balancer, full concurrency) and leader-failover recovery time land on Day 3 once the Docker Compose stack can be brought up in CI.
+The cache-hit path is ~170× faster than a Gemini round-trip, and the 3-node cluster serves ~200 req/s on a single endpoint with hit latency still under 60 ms at P99.
+
+**Leader-failover recovery:** ~1.9 s end-to-end on the local 3-process cluster (leader killed with `kill -9`; surviving pair elects a new leader, and reads on the new leader return the previously-replicated cache entry with `cached=true`). Reproduce with `./scripts/run-local-cluster.sh` + `./scripts/kill-local-leader.sh`, or the Docker Compose variants `docker compose up` + `./scripts/kill-leader.sh`.
 
 ## Project layout
 
@@ -115,9 +133,11 @@ tests/
 └── integration/  # Real MiniLM model, marked `integration`
 
 scripts/
-├── bench.py          # Benchmark harness
-├── kill-leader.sh    # Failover demo
-└── orient.sh         # Session-start orientation (multi-agent coord)
+├── bench.py               # Benchmark harness
+├── kill-leader.sh         # Failover demo (Docker variant)
+├── run-local-cluster.sh   # 3-process cluster without Docker
+├── kill-local-leader.sh   # Failover demo (local-process variant)
+└── orient.sh              # Session-start orientation (multi-agent coord)
 ```
 
 ## Design decisions

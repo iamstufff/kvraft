@@ -1,0 +1,14 @@
+[
+  "What is SQL injection and how do I defend against it?",
+  "Explain SQLi and how parameterized queries help.",
+  "How does a blind SQL injection attack work?",
+  "What does broken or risky cryptography mean?",
+  "Why is MD5 considered broken for password hashing?",
+  "What is the right modern password hash (argon2, bcrypt, scrypt)?",
+  "What is race-condition in a web application?",
+  "How does a TOCTOU bug happen in filesystem code?",
+  "How do I prevent race conditions in a payment endpoint?",
+  "What is a prototype pollution vulnerability in JavaScript?",
+  "How does an attacker poison Object.prototype?",
+  "How do I harden a Node.js app against prototype pollution?"
+]
