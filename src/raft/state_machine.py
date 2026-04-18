@@ -74,8 +74,11 @@ class ReplicatedSemanticCache(SyncObj):  # type: ignore[misc]
         index: SemanticIndex | None = None,
         conf: SyncObjConf | None = None,
     ) -> None:
-        super().__init__(self_addr, peer_addrs, conf=conf)
+        # SyncObj.__init__ walks dir(self) to discover @replicated methods, which
+        # dereferences every property too — so `_state` must exist before we
+        # call super().__init__ or `size` blows up.
         self._state = _CacheState(index)
+        super().__init__(self_addr, peer_addrs, conf=conf)
 
     @property
     def size(self) -> int:
