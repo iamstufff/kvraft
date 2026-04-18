@@ -81,6 +81,10 @@ files = ["src"]
 module = ["hnswlib"]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = ["google.generativeai", "google.generativeai.*"]
+implicit_reexport = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
