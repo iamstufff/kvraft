@@ -21,7 +21,12 @@ class Settings(BaseSettings):
     hnsw_m: int = DEFAULT_HNSW_M
     similarity_threshold: float = DEFAULT_SIMILARITY_THRESHOLD
     node_id: str = DEFAULT_NODE_ID
+    raft_bind: str = ""
     raft_peers: list[str] = Field(default_factory=list)
+
+    @property
+    def raft_enabled(self) -> bool:
+        return bool(self.raft_bind) and bool(self.raft_peers)
 
 
 @lru_cache

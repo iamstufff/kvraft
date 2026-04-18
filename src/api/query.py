@@ -8,9 +8,13 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from src.cache.core import Hit, SemanticCache
+from src.config import get_settings
 from src.metrics import PROVIDER_CALLS, QUERY_LATENCY, QUERY_TOTAL
 from src.proxy.base import Provider, ProviderAPIError, ProviderTimeoutError, ProxyError
 from src.proxy.gemini_client import GeminiClient
+from src.raft.state_machine import ReplicatedSemanticCache
+
+CacheBackend = SemanticCache | ReplicatedSemanticCache
 
 router = APIRouter()
 
@@ -28,16 +32,23 @@ class QueryResponse(BaseModel):
 
 @dataclass
 class _State:
-    cache: SemanticCache | None = field(default=None)
+    cache: CacheBackend | None = field(default=None)
     gemini: GeminiClient | None = field(default=None)
 
 
 _state = _State()
 
 
-def _get_cache() -> SemanticCache:
+def _build_cache() -> CacheBackend:
+    settings = get_settings()
+    if settings.raft_enabled:
+        return ReplicatedSemanticCache(settings.raft_bind, settings.raft_peers)
+    return SemanticCache()
+
+
+def _get_cache() -> CacheBackend:
     if _state.cache is None:
-        _state.cache = SemanticCache()
+        _state.cache = _build_cache()
     return _state.cache
 
 
