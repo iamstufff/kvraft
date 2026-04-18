@@ -1,0 +1,81 @@
+[
+  "What is Cross-Site Scripting and how do I prevent it?",
+  "Explain XSS and common defenses.",
+  "How does stored XSS differ from reflected XSS?",
+
+  "What is SQL injection and how do I defend against it?",
+  "Explain SQLi and how parameterized queries help.",
+  "How does a blind SQL injection attack work?",
+
+  "What is OS command injection?",
+  "How do attackers exploit shell command injection vulnerabilities?",
+  "Give an example of a command injection vulnerability in Python.",
+
+  "What is path traversal (directory traversal)?",
+  "How does the ../../etc/passwd attack work?",
+  "What are defenses against filesystem path traversal?",
+
+  "What is a CSRF attack?",
+  "How do synchronizer tokens prevent Cross-Site Request Forgery?",
+  "Explain SameSite cookie attribute and CSRF.",
+
+  "What risks come from unrestricted file upload?",
+  "How should I validate uploaded files on a web server?",
+  "Can an image upload lead to remote code execution?",
+
+  "What is unsafe deserialization and why is it dangerous?",
+  "Explain how Java deserialization gadget chains work.",
+  "How do I safely deserialize untrusted data in Python?",
+
+  "What is XML External Entity (XXE) injection?",
+  "How does XXE exfiltrate local files?",
+  "How do I disable external entities in libxml2?",
+
+  "What are incorrect file permission assignments?",
+  "Why is a world-writable /etc/shadow a problem?",
+  "How do I audit directory permissions on Linux?",
+
+  "What are the risks of hardcoded credentials in source code?",
+  "How should an application load secrets at runtime?",
+  "What tools scan for secrets committed to git?",
+
+  "What counts as improper authentication?",
+  "How do I design a secure login flow?",
+  "What is credential stuffing and how do I mitigate it?",
+
+  "What does 'missing authentication for critical function' mean in practice?",
+  "How do attackers find unauthenticated admin endpoints?",
+  "How should a microservice enforce authentication on internal APIs?",
+
+  "What does broken or risky cryptography mean?",
+  "Why is MD5 considered broken for password hashing?",
+  "What is the right modern password hash (argon2, bcrypt, scrypt)?",
+
+  "What is Server-Side Request Forgery?",
+  "How does SSRF target cloud metadata services like 169.254.169.254?",
+  "How do I defend a URL-fetch endpoint against SSRF?",
+
+  "What is an open redirect vulnerability?",
+  "How is an open redirect abused in phishing?",
+  "How do I validate a redirect target URL server-side?",
+
+  "What is a memory-safety vulnerability?",
+  "Explain buffer overflow versus heap overflow.",
+  "Why does Rust eliminate most memory-safety bugs?",
+
+  "What is race-condition in a web application?",
+  "How does a TOCTOU bug happen in filesystem code?",
+  "How do I prevent race conditions in a payment endpoint?",
+
+  "What is a clickjacking attack?",
+  "How does the X-Frame-Options header defend against clickjacking?",
+  "Explain Content-Security-Policy frame-ancestors.",
+
+  "What is a prototype pollution vulnerability in JavaScript?",
+  "How does an attacker poison Object.prototype?",
+  "How do I harden a Node.js app against prototype pollution?",
+
+  "What are the main OWASP Top 10 risks for 2021?",
+  "List the most common web application vulnerabilities.",
+  "Which OWASP categories cover injection attacks?"
+]
