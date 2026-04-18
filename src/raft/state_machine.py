@@ -81,6 +81,11 @@ class ReplicatedSemanticCache(SyncObj):  # type: ignore[misc]
     def size(self) -> int:
         return self._state.size
 
+    def is_leader(self) -> bool:
+        """True iff this replica currently believes it is the Raft leader."""
+        # pysyncobj exposes _isLeader on the SyncObj base class.
+        return bool(self._isLeader())
+
     @replicated  # type: ignore[untyped-decorator]
     def _apply_put(self, value: str, embedding_bytes: bytes) -> int:
         vector = np.frombuffer(embedding_bytes, dtype=np.float32).copy()
