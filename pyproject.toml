@@ -78,7 +78,7 @@ strict = true
 files = ["src"]
 
 [[tool.mypy.overrides]]
-module = ["hnswlib"]
+module = ["hnswlib", "pysyncobj", "pysyncobj.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
