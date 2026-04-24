@@ -68,3 +68,53 @@ def test_search_returns_nothing_when_all_below_threshold(small_index: SemanticIn
     small_index.add(_unit([0.0, 1.0, 0.0, 0.0]), id_=1)
     matches = small_index.search(_unit([1.0, 0.0, 0.0, 0.0]), k=1, threshold=0.5)
     assert matches == []
+
+
+def test_mark_deleted_excludes_from_search(small_index: SemanticIndex) -> None:
+    vec = _unit([1.0, 0.0, 0.0, 0.0])
+    small_index.add(vec, id_=7)
+    small_index.add(_unit([0.0, 1.0, 0.0, 0.0]), id_=8)
+
+    small_index.mark_deleted(7)
+
+    matches = small_index.search(vec, k=1, threshold=0.5)
+    assert all(m.id != 7 for m in matches)
+    assert small_index.size == 1
+    assert small_index.soft_deleted_count == 1
+    assert small_index.total_count == 2
+
+
+def test_mark_deleted_is_idempotent(small_index: SemanticIndex) -> None:
+    small_index.add(_unit([1.0, 0.0, 0.0, 0.0]), id_=1)
+    small_index.mark_deleted(1)
+    small_index.mark_deleted(1)
+    assert small_index.soft_deleted_count == 1
+
+
+def test_rebuild_drops_soft_deleted(small_index: SemanticIndex) -> None:
+    alive = _unit([1.0, 0.0, 0.0, 0.0])
+    doomed = _unit([0.0, 1.0, 0.0, 0.0])
+    small_index.add(alive, id_=1)
+    small_index.add(doomed, id_=2)
+    small_index.mark_deleted(2)
+
+    small_index.rebuild([(1, alive)])
+
+    assert small_index.size == 1
+    assert small_index.soft_deleted_count == 0
+    assert small_index.total_count == 1
+    matches = small_index.search(alive, k=1, threshold=0.5)
+    assert len(matches) == 1 and matches[0].id == 1
+
+
+def test_rebuild_on_empty_items_keeps_index_usable(small_index: SemanticIndex) -> None:
+    small_index.add(_unit([1.0, 0.0, 0.0, 0.0]), id_=1)
+    small_index.mark_deleted(1)
+
+    small_index.rebuild([])
+
+    assert small_index.size == 0
+    assert small_index.total_count == 0
+    # Adding again after an empty rebuild should still work.
+    small_index.add(_unit([0.0, 1.0, 0.0, 0.0]), id_=42)
+    assert small_index.size == 1

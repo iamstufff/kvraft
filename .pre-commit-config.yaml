@@ -30,10 +30,3 @@ repos:
         language: system
         pass_filenames: false
         stages: [pre-commit]
-
-      - id: status-freshness
-        name: STATUS.md updated in last 30 min
-        entry: bash -c 'if [ -n "$(git diff --cached --name-only | grep -v STATUS.md)" ] && [ -z "$(git diff --cached --name-only | grep STATUS.md)" ]; then echo "WARNING: committing code changes without touching STATUS.md — did you update it?" ; fi; exit 0'
-        language: system
-        pass_filenames: false
-        stages: [pre-commit]

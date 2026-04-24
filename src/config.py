@@ -10,6 +10,8 @@ DEFAULT_HNSW_EF_CONSTRUCTION = 200
 DEFAULT_HNSW_M = 16
 DEFAULT_NODE_ID = "node-1"
 DEFAULT_SIMILARITY_THRESHOLD = 0.8
+DEFAULT_MAX_CAPACITY = 10_000
+DEFAULT_REBUILD_THRESHOLD = 0.3
 
 
 class Settings(BaseSettings):
@@ -20,6 +22,8 @@ class Settings(BaseSettings):
     hnsw_ef_construction: int = DEFAULT_HNSW_EF_CONSTRUCTION
     hnsw_m: int = DEFAULT_HNSW_M
     similarity_threshold: float = DEFAULT_SIMILARITY_THRESHOLD
+    max_capacity: int = DEFAULT_MAX_CAPACITY
+    rebuild_threshold: float = DEFAULT_REBUILD_THRESHOLD
     node_id: str = DEFAULT_NODE_ID
     raft_bind: str = ""
     raft_peers: list[str] = Field(default_factory=list)

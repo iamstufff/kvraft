@@ -45,7 +45,7 @@ Traditional reverse proxies cache on the exact prompt string. LLM workloads rare
 |---|---|
 | `POST /query` | `{"prompt": str, "provider": "gemini"}` → `{"response": str, "cached": bool, "similarity": float \| null}` |
 | `GET /health` | Liveness, returns `{"status":"ok","node_id":...}` |
-| `GET /metrics` | Prometheus exposition: `kvraft_query_total`, `kvraft_query_latency_seconds`, `kvraft_provider_calls_total`, `kvraft_leader_state` |
+| `GET /metrics` | Prometheus exposition: `kvraft_query_total`, `kvraft_query_latency_seconds`, `kvraft_provider_calls_total`, `kvraft_leader_state`, `kvraft_cache_evictions_total`, `kvraft_cache_live_entries`, `kvraft_cache_soft_deleted_entries`, `kvraft_cache_rebuilds_total` |
 
 ## Quickstart (single node, local Python)
 
@@ -136,19 +136,20 @@ scripts/
 ├── bench.py               # Benchmark harness
 ├── kill-leader.sh         # Failover demo (Docker variant)
 ├── run-local-cluster.sh   # 3-process cluster without Docker
-├── kill-local-leader.sh   # Failover demo (local-process variant)
-└── orient.sh              # Session-start orientation (multi-agent coord)
+└── kill-local-leader.sh   # Failover demo (local-process variant)
 ```
 
 ## Design decisions
 
 - **Embeddings are shipped over Raft as raw `float32` bytes.** The alternative — each replica re-embedding on apply — would double CPU and require the embedding model to be bit-identical across nodes. Bytes are cheaper and deterministic.
 - **Reads are local; only writes replicate.** pysyncobj's `@replicated` is sync-committed for writes; `get_or_miss` hits the local HNSW index directly. This is strong-consistency for writes, monotonic-read consistency for reads.
+- **LRU eviction is leader-only; deletes replicate through Raft.** The cache is bounded at `MAX_CAPACITY` (default 10k live entries). When the leader fills the bucket it picks its own LRU victim and emits an `_apply_delete` Raft op; followers apply the delete identically. Follower reads don't feed back into eviction ordering — we accept approximate LRU in exchange for strictly convergent state across replicas. `hnswlib` deletes are soft, so each replica deterministically rebuilds its index once the soft-deleted fraction crosses `REBUILD_THRESHOLD` (default 0.3).
 - **Single-stage Docker image.** Torch + sentence-transformers are heavy; splitting to multi-stage will come once the layers stabilize (Day 3 stretch).
 
 ## Future work
 
-- Multi-region Raft + tiered eviction (TTL, LRU)
+- TTL eviction on top of the existing LRU
+- Multi-region Raft
 - TLS between replicas + auth on the public API
 - Kubernetes manifests (current deploy target is Docker Compose)
 - OpenAI / Anthropic provider adapters (plumbing already in place via the `Provider` protocol)

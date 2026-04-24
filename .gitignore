@@ -53,3 +53,15 @@ raft-journal/
 
 # Docker build cache
 .dockerignore-local
+
+# Internal coordination / agent workspaces — not shipped in the public repo
+CLAUDE.md
+AGENTS.md
+STATUS.md
+DECISIONS.md
+CONVENTIONS.md
+LRU_plan.md
+.claude/
+.codex/
+.codex
+scripts/orient.sh

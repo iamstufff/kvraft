@@ -1,7 +1,7 @@
 """Gemini provider using ``google.generativeai``.
 
-The SDK is deprecated in favor of ``google.genai``; migration is deferred
-until after the Day-3 demo. See DECISIONS.md.
+The SDK is deprecated in favor of ``google.genai``; migration is tracked as
+future work.
 """
 
 from typing import cast

@@ -72,3 +72,74 @@ def test_deterministic_replay_between_replicas() -> None:
     # Each replica, querying the same vector, returns the same value.
     query = _unit([1.0, 0.0, 0.0, 0.0])
     assert leader.lookup(query, threshold=0.5) == follower.lookup(query, threshold=0.5)
+
+
+def test_apply_delete_removes_entry(state: _CacheState) -> None:
+    vec = _unit([1.0, 0.0, 0.0, 0.0])
+    id_ = state.apply_put("doomed", vec)
+
+    assert state.apply_delete(id_) is True
+    assert state.size == 0
+    assert state.soft_deleted_count == 1
+    assert state.lookup(vec, threshold=0.5) is None
+
+
+def test_apply_delete_returns_false_for_unknown_id(state: _CacheState) -> None:
+    assert state.apply_delete(999) is False
+
+
+def test_lookup_with_id_returns_hit_id(state: _CacheState) -> None:
+    vec = _unit([1.0, 0.0, 0.0, 0.0])
+    id_ = state.apply_put("val", vec)
+
+    found = state.lookup_with_id(vec, threshold=0.5)
+
+    assert found is not None
+    hit_id, hit = found
+    assert hit_id == id_
+    assert hit.value == "val"
+
+
+def test_delete_then_apply_determinism_between_replicas() -> None:
+    vectors = [
+        _unit([1.0, 0.0, 0.0, 0.0]),
+        _unit([0.0, 1.0, 0.0, 0.0]),
+        _unit([0.0, 0.0, 1.0, 0.0]),
+    ]
+
+    leader = _state()
+    follower = _state()
+    ids = []
+    for i, vec in enumerate(vectors):
+        ids.append(leader.apply_put(f"v{i}", vec))
+        follower.apply_put(f"v{i}", vec)
+
+    # Evict the middle entry on both replicas (as Raft would).
+    assert leader.apply_delete(ids[1]) is True
+    assert follower.apply_delete(ids[1]) is True
+
+    for vec in vectors:
+        assert leader.lookup(vec, threshold=0.5) == follower.lookup(vec, threshold=0.5)
+    assert leader.size == follower.size == 2
+
+
+def test_rebuild_reclaims_soft_deleted_space(state: _CacheState) -> None:
+    vectors = [
+        _unit([1.0, 0.0, 0.0, 0.0]),
+        _unit([0.0, 1.0, 0.0, 0.0]),
+        _unit([0.0, 0.0, 1.0, 0.0]),
+    ]
+    ids = [state.apply_put(f"v{i}", v) for i, v in enumerate(vectors)]
+
+    state.apply_delete(ids[0])
+    state.apply_delete(ids[1])
+    assert state.soft_deleted_count == 2
+    assert state.should_rebuild(threshold=0.3) is True
+
+    state.rebuild_index()
+
+    assert state.soft_deleted_count == 0
+    assert state.total_count == 1
+    assert state.size == 1
+    # Surviving entry still queryable.
+    assert state.lookup(vectors[2], threshold=0.5) is not None
