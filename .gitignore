@@ -54,6 +54,9 @@ raft-journal/
 # Docker build cache
 .dockerignore-local
 
+# Git worktrees
+.worktrees/
+
 # Internal coordination / agent workspaces — not shipped in the public repo
 CLAUDE.md
 AGENTS.md
