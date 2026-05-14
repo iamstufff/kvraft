@@ -1,5 +1,6 @@
 """POST /query — semantic cache in front of the provider."""
 
+import asyncio
 import time
 from dataclasses import dataclass, field
 from typing import Literal
@@ -69,7 +70,7 @@ async def query(body: QueryRequest) -> QueryResponse:
     cache = _get_cache()
     provider: Provider = _get_gemini()
 
-    result = cache.get_or_miss(body.prompt)
+    result = await asyncio.to_thread(cache.get_or_miss, body.prompt)
     if isinstance(result, Hit):
         _record("hit", started)
         return QueryResponse(
@@ -94,6 +95,6 @@ async def query(body: QueryRequest) -> QueryResponse:
         raise HTTPException(status_code=502, detail=str(exc)) from exc
 
     PROVIDER_CALLS.labels(provider=body.provider, result="ok").inc()
-    cache.put(body.prompt, response_text, embedding=result.embedding)
+    await asyncio.to_thread(cache.put, body.prompt, response_text, embedding=result.embedding)
     _record("miss", started)
     return QueryResponse(response=response_text, cached=False, similarity=None)

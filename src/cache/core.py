@@ -9,6 +9,7 @@ is soft-deleted before a new insert. Soft-deletes are reclaimed via
 ``SemanticIndex.rebuild`` once they cross ``Settings.rebuild_threshold``.
 """
 
+import threading
 from collections import OrderedDict
 from dataclasses import dataclass
 
@@ -48,6 +49,7 @@ class SemanticCache:
         self._embeddings: dict[int, NDArray[np.float32]] = {}
         self._lru: OrderedDict[int, None] = OrderedDict()
         self._next_id = 0
+        self._lock = threading.Lock()
 
     @property
     def size(self) -> int:
@@ -60,11 +62,12 @@ class SemanticCache:
     def get_or_miss(self, prompt: str) -> CacheResult:
         vector = embed(prompt)
         threshold = get_settings().similarity_threshold
-        matches = self._index.search(vector, k=1, threshold=threshold)
-        if matches:
-            top = matches[0]
-            self._touch(top.id)
-            return Hit(value=self._values[top.id], similarity=top.similarity)
+        with self._lock:
+            matches = self._index.search(vector, k=1, threshold=threshold)
+            if matches:
+                top = matches[0]
+                self._touch(top.id)
+                return Hit(value=self._values[top.id], similarity=top.similarity)
         return Miss(prompt=prompt, embedding=vector)
 
     def put(
@@ -75,18 +78,19 @@ class SemanticCache:
     ) -> int:
         vector = embedding if embedding is not None else embed(prompt)
         settings = get_settings()
-        if self._index.size >= settings.max_capacity:
-            victim = next(iter(self._lru), None)
-            if victim is not None:
-                self._evict(victim)
-        assigned_id = self._next_id
-        self._next_id += 1
-        self._index.add(vector, id_=assigned_id)
-        self._values[assigned_id] = value
-        self._embeddings[assigned_id] = vector
-        self._touch(assigned_id)
-        self._publish_gauges()
-        return assigned_id
+        with self._lock:
+            if self._index.size >= settings.max_capacity:
+                victim = next(iter(self._lru), None)
+                if victim is not None:
+                    self._evict(victim)
+            assigned_id = self._next_id
+            self._next_id += 1
+            self._index.add(vector, id_=assigned_id)
+            self._values[assigned_id] = value
+            self._embeddings[assigned_id] = vector
+            self._touch(assigned_id)
+            self._publish_gauges()
+            return assigned_id
 
     def _touch(self, id_: int) -> None:
         self._lru[id_] = None
