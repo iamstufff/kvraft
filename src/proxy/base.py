@@ -22,6 +22,10 @@ class ProviderAPIError(ProxyError):
     """Provider's SDK returned an error or non-2xx response."""
 
 
+class ProviderChainExhaustedError(ProxyError):
+    """Every provider in the configured chain is open (failed or breaker-tripped)."""
+
+
 @runtime_checkable
 class Provider(Protocol):
     name: str

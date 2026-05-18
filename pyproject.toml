@@ -20,8 +20,10 @@ dependencies = [
     "hnswlib>=0.8",
     # Raft consensus
     "pysyncobj>=0.3.12",
-    # LLM providers (Gemini primary)
+    # LLM providers
     "google-generativeai>=0.5",
+    "openai>=1.14",
+    "anthropic>=0.25",
     # Config + validation
     "pydantic>=2.6",
     "pydantic-settings>=2.2",
@@ -40,14 +42,10 @@ dev = [
     "mypy>=1.9",
     "pre-commit>=3.7",
 ]
-stretch = [
-    # Day 3 stretch: additional providers
-    "openai>=1.14",
-    "anthropic>=0.25",
-]
 bench = [
-    "matplotlib>=3.8",
     "aiohttp>=3.9",
+    "matplotlib>=3.8",
+    "redis>=5.0",
 ]
 
 [build-system]
@@ -84,6 +82,10 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = ["google.generativeai", "google.generativeai.*"]
 implicit_reexport = true
+
+[[tool.mypy.overrides]]
+module = ["openai", "openai.*", "anthropic", "anthropic.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

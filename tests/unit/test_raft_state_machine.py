@@ -123,6 +123,46 @@ def test_delete_then_apply_determinism_between_replicas() -> None:
     assert leader.size == follower.size == 2
 
 
+def test_apply_put_stores_expires_at(state: _CacheState) -> None:
+    vec = _unit([1.0, 0.0, 0.0, 0.0])
+    state.apply_put("v", vec, op_time=100.0, ttl_seconds=60.0)
+    assert state.expires_at(0) == 160.0
+
+
+def test_apply_put_with_zero_ttl_means_never_expires(state: _CacheState) -> None:
+    vec = _unit([1.0, 0.0, 0.0, 0.0])
+    state.apply_put("v", vec, op_time=100.0, ttl_seconds=0.0)
+    assert state.expires_at(0) is None
+
+
+def test_lookup_returns_none_for_expired_entry(state: _CacheState) -> None:
+    vec = _unit([1.0, 0.0, 0.0, 0.0])
+    state.apply_put("v", vec, op_time=100.0, ttl_seconds=10.0)
+    assert state.lookup(vec, threshold=0.5, now=109.0) is not None
+    assert state.lookup(vec, threshold=0.5, now=111.0) is None
+
+
+def test_lookup_without_now_uses_no_expiry(state: _CacheState) -> None:
+    vec = _unit([1.0, 0.0, 0.0, 0.0])
+    state.apply_put("v", vec, op_time=100.0, ttl_seconds=10.0)
+    # Backwards-compatible call: no now, no TTL check.
+    assert state.lookup(vec, threshold=0.5) is not None
+
+
+def test_find_expired_returns_ids_due_for_eviction(state: _CacheState) -> None:
+    state.apply_put("a", _unit([1.0, 0.0, 0.0, 0.0]), op_time=100.0, ttl_seconds=10.0)
+    state.apply_put("b", _unit([0.0, 1.0, 0.0, 0.0]), op_time=100.0, ttl_seconds=100.0)
+    expired = state.find_expired(now=120.0)
+    assert expired == [0]
+
+
+def test_apply_delete_clears_expires_at(state: _CacheState) -> None:
+    vec = _unit([1.0, 0.0, 0.0, 0.0])
+    id_ = state.apply_put("v", vec, op_time=100.0, ttl_seconds=10.0)
+    state.apply_delete(id_)
+    assert state.expires_at(id_) is None
+
+
 def test_rebuild_reclaims_soft_deleted_space(state: _CacheState) -> None:
     vectors = [
         _unit([1.0, 0.0, 0.0, 0.0]),

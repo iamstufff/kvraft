@@ -10,6 +10,7 @@ is soft-deleted before a new insert. Soft-deletes are reclaimed via
 """
 
 import threading
+import time
 from collections import OrderedDict
 from dataclasses import dataclass
 
@@ -24,6 +25,7 @@ from src.metrics import (
     CACHE_LIVE_ENTRIES,
     CACHE_REBUILDS,
     CACHE_SOFT_DELETED_ENTRIES,
+    CACHE_TTL_EVICTIONS,
 )
 
 
@@ -47,6 +49,7 @@ class SemanticCache:
         self._index = index if index is not None else SemanticIndex()
         self._values: dict[int, str] = {}
         self._embeddings: dict[int, NDArray[np.float32]] = {}
+        self._expires_at: dict[int, float] = {}
         self._lru: OrderedDict[int, None] = OrderedDict()
         self._next_id = 0
         self._lock = threading.Lock()
@@ -62,12 +65,15 @@ class SemanticCache:
     def get_or_miss(self, prompt: str) -> CacheResult:
         vector = embed(prompt)
         threshold = get_settings().similarity_threshold
+        now = time.time()
         with self._lock:
             matches = self._index.search(vector, k=1, threshold=threshold)
             if matches:
                 top = matches[0]
-                self._touch(top.id)
-                return Hit(value=self._values[top.id], similarity=top.similarity)
+                exp = self._expires_at.get(top.id)
+                if exp is None or exp > now:
+                    self._touch(top.id)
+                    return Hit(value=self._values[top.id], similarity=top.similarity)
         return Miss(prompt=prompt, embedding=vector)
 
     def put(
@@ -78,16 +84,23 @@ class SemanticCache:
     ) -> int:
         vector = embedding if embedding is not None else embed(prompt)
         settings = get_settings()
+        now = time.time()
         with self._lock:
             if self._index.size >= settings.max_capacity:
                 victim = next(iter(self._lru), None)
                 if victim is not None:
                     self._evict(victim)
+            if settings.cache_ttl_seconds > 0.0:
+                for expired_id in [i for i, e in self._expires_at.items() if e <= now]:
+                    self._evict(expired_id)
+                    CACHE_TTL_EVICTIONS.inc()
             assigned_id = self._next_id
             self._next_id += 1
             self._index.add(vector, id_=assigned_id)
             self._values[assigned_id] = value
             self._embeddings[assigned_id] = vector
+            if settings.cache_ttl_seconds > 0.0:
+                self._expires_at[assigned_id] = now + settings.cache_ttl_seconds
             self._touch(assigned_id)
             self._publish_gauges()
             return assigned_id
@@ -100,6 +113,7 @@ class SemanticCache:
         self._index.mark_deleted(id_)
         self._values.pop(id_, None)
         self._embeddings.pop(id_, None)
+        self._expires_at.pop(id_, None)
         self._lru.pop(id_, None)
         CACHE_EVICTIONS.inc()
         self._maybe_rebuild()

@@ -1,3 +1,5 @@
+import pytest
+
 from src.config import (
     DEFAULT_EMBEDDING_MODEL,
     DEFAULT_HNSW_EF_CONSTRUCTION,
@@ -6,6 +8,7 @@ from src.config import (
     DEFAULT_NODE_ID,
     DEFAULT_REBUILD_THRESHOLD,
     DEFAULT_SIMILARITY_THRESHOLD,
+    Settings,
     get_settings,
 )
 
@@ -66,3 +69,33 @@ def test_settings_use_defaults_when_environment_is_empty(monkeypatch) -> None:
     assert settings.rebuild_threshold == DEFAULT_REBUILD_THRESHOLD
     assert settings.node_id == DEFAULT_NODE_ID
     assert settings.raft_peers == []
+
+
+def test_provider_chain_defaults_to_gemini_only(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("PROVIDER_CHAIN", raising=False)
+    settings = Settings()
+    assert settings.provider_chain == ["gemini"]
+
+
+def test_provider_chain_parses_comma_separated(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("PROVIDER_CHAIN", "gemini,openai,anthropic")
+    settings = Settings()
+    assert settings.provider_chain == ["gemini", "openai", "anthropic"]
+
+
+def test_breaker_defaults() -> None:
+    settings = Settings()
+    assert settings.breaker_failure_threshold == 5
+    assert settings.breaker_failure_window_seconds == 30.0
+    assert settings.breaker_recovery_seconds == 15.0
+
+
+def test_ttl_default_one_hour_and_disabled_with_zero(monkeypatch: pytest.MonkeyPatch) -> None:
+    assert Settings().cache_ttl_seconds == 3600.0
+    monkeypatch.setenv("CACHE_TTL_SECONDS", "0")
+    assert Settings().cache_ttl_seconds == 0.0
+
+
+def test_coalesce_threshold_default_matches_similarity_threshold() -> None:
+    settings = Settings()
+    assert settings.coalesce_threshold == settings.similarity_threshold

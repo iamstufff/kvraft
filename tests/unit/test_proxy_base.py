@@ -4,6 +4,7 @@ from src.errors import KVRaftError
 from src.proxy.base import (
     Provider,
     ProviderAPIError,
+    ProviderChainExhaustedError,
     ProviderTimeoutError,
     ProxyError,
 )
@@ -47,3 +48,9 @@ def test_proxy_error_wraps_context_via_chaining() -> None:
         assert exc.__cause__ is source
     else:
         pytest.fail("ProviderAPIError was not raised")
+
+
+def test_chain_exhausted_is_a_proxy_error() -> None:
+    err = ProviderChainExhaustedError("all dead")
+    assert isinstance(err, ProxyError)
+    assert str(err) == "all dead"

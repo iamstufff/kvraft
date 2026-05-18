@@ -27,6 +27,7 @@ The state is split into two layers:
 
 from __future__ import annotations
 
+import time
 from collections import OrderedDict
 
 import numpy as np
@@ -42,6 +43,7 @@ from src.metrics import (
     CACHE_LIVE_ENTRIES,
     CACHE_REBUILDS,
     CACHE_SOFT_DELETED_ENTRIES,
+    CACHE_TTL_EVICTIONS,
 )
 
 
@@ -57,6 +59,7 @@ class _CacheState:
         self._index = index if index is not None else SemanticIndex()
         self._values: dict[int, str] = {}
         self._embeddings: dict[int, NDArray[np.float32]] = {}
+        self._expires_at: dict[int, float] = {}
         self._next_id = 0
 
     @property
@@ -71,12 +74,21 @@ class _CacheState:
     def total_count(self) -> int:
         return self._index.total_count
 
-    def apply_put(self, value: str, embedding: NDArray[np.float32]) -> int:
+    def apply_put(
+        self,
+        value: str,
+        embedding: NDArray[np.float32],
+        *,
+        op_time: float = 0.0,
+        ttl_seconds: float = 0.0,
+    ) -> int:
         assigned_id = self._next_id
         self._next_id += 1
         self._index.add(embedding, id_=assigned_id)
         self._values[assigned_id] = value
         self._embeddings[assigned_id] = embedding
+        if ttl_seconds > 0.0:
+            self._expires_at[assigned_id] = op_time + ttl_seconds
         return assigned_id
 
     def apply_delete(self, id_: int) -> bool:
@@ -85,7 +97,14 @@ class _CacheState:
         self._index.mark_deleted(id_)
         del self._values[id_]
         del self._embeddings[id_]
+        self._expires_at.pop(id_, None)
         return True
+
+    def expires_at(self, id_: int) -> float | None:
+        return self._expires_at.get(id_)
+
+    def find_expired(self, now: float) -> list[int]:
+        return [id_ for id_, exp in self._expires_at.items() if exp <= now]
 
     def should_rebuild(self, threshold: float) -> bool:
         total = self._index.total_count
@@ -96,12 +115,22 @@ class _CacheState:
     def rebuild_index(self) -> None:
         self._index.rebuild(self._embeddings.items())
 
-    def lookup(self, embedding: NDArray[np.float32], threshold: float) -> Hit | None:
-        found = self.lookup_with_id(embedding, threshold)
+    def lookup(
+        self,
+        embedding: NDArray[np.float32],
+        threshold: float,
+        *,
+        now: float | None = None,
+    ) -> Hit | None:
+        found = self.lookup_with_id(embedding, threshold, now=now)
         return None if found is None else found[1]
 
     def lookup_with_id(
-        self, embedding: NDArray[np.float32], threshold: float
+        self,
+        embedding: NDArray[np.float32],
+        threshold: float,
+        *,
+        now: float | None = None,
     ) -> tuple[int, Hit] | None:
         matches = self._index.search(embedding, k=1, threshold=threshold)
         if not matches:
@@ -110,6 +139,10 @@ class _CacheState:
         value = self._values.get(top.id)
         if value is None:
             return None
+        if now is not None:
+            exp = self._expires_at.get(top.id)
+            if exp is not None and exp <= now:
+                return None
         return top.id, Hit(value=value, similarity=top.similarity)
 
 
@@ -160,9 +193,11 @@ class ReplicatedSemanticCache(SyncObj):  # type: ignore[misc]
             CACHE_REBUILDS.inc()
 
     @replicated  # type: ignore[untyped-decorator]
-    def _apply_put(self, value: str, embedding_bytes: bytes) -> int:
+    def _apply_put(
+        self, value: str, embedding_bytes: bytes, op_time: float, ttl_seconds: float
+    ) -> int:
         vector = np.frombuffer(embedding_bytes, dtype=np.float32).copy()
-        assigned_id = self._state.apply_put(value, vector)
+        assigned_id = self._state.apply_put(value, vector, op_time=op_time, ttl_seconds=ttl_seconds)
         _publish_cache_gauges(self._state)
         return assigned_id
 
@@ -183,13 +218,23 @@ class ReplicatedSemanticCache(SyncObj):  # type: ignore[misc]
     ) -> int:
         vector = embedding if embedding is not None else embed(prompt)
         settings = get_settings()
+        op_time = time.time()
+        ttl_seconds = settings.cache_ttl_seconds
         if self.is_leader() and self._state.size >= settings.max_capacity:
             victim = next(iter(self._lru), None)
             if victim is not None:
                 self._apply_delete(victim, sync=True)
                 self._lru.pop(victim, None)
+        # Opportunistic TTL eviction: leader scans for one expired id and
+        # piggybacks a delete onto this write. Bounded work per put.
+        if self.is_leader() and ttl_seconds > 0.0:
+            expired = self._state.find_expired(now=op_time)
+            if expired:
+                self._apply_delete(expired[0], sync=True)
+                self._lru.pop(expired[0], None)
+                CACHE_TTL_EVICTIONS.inc()
         # sync=True makes pysyncobj block until the op is committed + applied.
-        assigned_id = int(self._apply_put(value, vector.tobytes(), sync=True))
+        assigned_id = int(self._apply_put(value, vector.tobytes(), op_time, ttl_seconds, sync=True))
         if self.is_leader():
             self._touch_lru(assigned_id)
         return assigned_id
@@ -197,7 +242,8 @@ class ReplicatedSemanticCache(SyncObj):  # type: ignore[misc]
     def get_or_miss(self, prompt: str) -> Hit | Miss:
         vector = embed(prompt)
         threshold = get_settings().similarity_threshold
-        found = self._state.lookup_with_id(vector, threshold)
+        now = time.time()
+        found = self._state.lookup_with_id(vector, threshold, now=now)
         if found is not None:
             hit_id, hit = found
             if self.is_leader():

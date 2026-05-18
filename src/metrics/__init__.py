@@ -50,15 +50,47 @@ CACHE_REBUILDS = Counter(
     "HNSW index rebuilds executed to reclaim soft-deleted memory.",
 )
 
+PROVIDER_CIRCUIT_STATE = Gauge(
+    "kvraft_provider_circuit_state",
+    "Circuit-breaker state per provider: 0=closed, 1=open, 2=half-open.",
+    ["provider"],
+)
+
+PROVIDER_FALLBACK = Counter(
+    "kvraft_provider_fallback_total",
+    "Fallthroughs from one provider to the next, labeled by source, target, and reason.",
+    ["from", "to", "reason"],
+)
+
+PROVIDER_CHAIN_EXHAUSTED = Counter(
+    "kvraft_provider_chain_exhausted_total",
+    "Times the entire provider chain failed in a single request (pages oncall).",
+)
+
+SINGLEFLIGHT_COALESCED = Counter(
+    "kvraft_singleflight_coalesced_total",
+    "Concurrent miss requests joined to an existing in-flight upstream call.",
+)
+
+CACHE_TTL_EVICTIONS = Counter(
+    "kvraft_cache_ttl_evictions_total",
+    "Cache entries evicted because their TTL expired (separate from LRU pressure).",
+)
+
 __all__ = [
     "CACHE_EVICTIONS",
     "CACHE_LIVE_ENTRIES",
     "CACHE_REBUILDS",
     "CACHE_SOFT_DELETED_ENTRIES",
+    "CACHE_TTL_EVICTIONS",
     "CONTENT_TYPE_LATEST",
     "LEADER_STATE",
     "PROVIDER_CALLS",
+    "PROVIDER_CHAIN_EXHAUSTED",
+    "PROVIDER_CIRCUIT_STATE",
+    "PROVIDER_FALLBACK",
     "QUERY_LATENCY",
     "QUERY_TOTAL",
+    "SINGLEFLIGHT_COALESCED",
     "generate_latest",
 ]

@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 import pytest
 from numpy.typing import NDArray
@@ -96,3 +98,25 @@ def test_size_reflects_cache_growth(
     cache.put("a", "A")
     cache.put("b", "B")
     assert cache.size == 2
+
+
+def test_ttl_expired_entry_returns_miss(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CACHE_TTL_SECONDS", "0.5")
+
+    cache = SemanticCache()
+    cache.put("prompt", "value")
+    first = cache.get_or_miss("prompt")
+    assert isinstance(first, Hit)
+
+    time.sleep(0.7)
+    second = cache.get_or_miss("prompt")
+    assert isinstance(second, Miss)
+
+
+def test_ttl_zero_disables_expiry(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("CACHE_TTL_SECONDS", "0")
+
+    cache = SemanticCache()
+    cache.put("prompt", "value")
+    time.sleep(0.2)
+    assert isinstance(cache.get_or_miss("prompt"), Hit)

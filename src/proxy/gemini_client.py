@@ -12,7 +12,7 @@ from google.api_core import exceptions as google_exceptions
 from src.config import get_settings
 from src.proxy.base import ProviderAPIError, ProviderTimeoutError
 
-DEFAULT_MODEL = "gemini-2.5-flash-lite"
+DEFAULT_MODEL = "gemini-3-flash-preview"
 
 
 class GeminiClient:

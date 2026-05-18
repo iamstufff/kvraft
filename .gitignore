@@ -46,6 +46,9 @@ Thumbs.db
 benchmarks/results/*.png
 benchmarks/results/*.csv
 !benchmarks/results/.gitkeep
+!benchmarks/results/compare_offline_default_threshold.csv
+!benchmarks/results/compare_offline_default_threshold.png
+!benchmarks/results/semantic_threshold_calibration.csv
 
 # Raft on-disk state
 *.raft
@@ -68,3 +71,4 @@ LRU_plan.md
 .codex/
 .codex
 scripts/orient.sh
+.agents/

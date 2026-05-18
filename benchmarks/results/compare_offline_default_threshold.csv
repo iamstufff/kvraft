@@ -1,0 +1,401 @@
+strategy,idx,prompt,cached,latency_ms,status
+redis-exact-offline,0,What is Cross-Site Scripting and how do I prevent it?,False,0.000,200
+redis-exact-offline,1,Explain XSS and common defenses.,False,0.000,200
+redis-exact-offline,2,How does stored XSS differ from reflected XSS?,False,0.000,200
+redis-exact-offline,3,Describe the dangers of DOM-based XSS in a single-page app.,False,0.000,200
+redis-exact-offline,4,How do Content Security Policy headers mitigate cross-site scripting?,False,0.000,200
+redis-exact-offline,5,What is SQL injection and how do I defend against it?,False,0.000,200
+redis-exact-offline,6,Explain SQLi and how parameterized queries help.,False,0.000,200
+redis-exact-offline,7,How does a blind SQL injection attack work?,False,0.000,200
+redis-exact-offline,8,Describe SQL injection in plain terms for a junior developer.,False,0.000,200
+redis-exact-offline,9,Why is SQLi still common despite ORMs and prepared statements?,False,0.000,200
+redis-exact-offline,10,What is OS command injection?,False,0.000,200
+redis-exact-offline,11,How do attackers exploit shell command injection vulnerabilities?,False,0.000,200
+redis-exact-offline,12,Give an example of a command injection vulnerability in Python.,False,0.000,200
+redis-exact-offline,13,How does shell metacharacter escaping prevent command injection?,False,0.000,200
+redis-exact-offline,14,Why is os.system unsafe when called with user-controlled arguments?,False,0.000,200
+redis-exact-offline,15,What is path traversal (directory traversal)?,False,0.000,200
+redis-exact-offline,16,How does the ../../etc/passwd attack work?,False,0.000,200
+redis-exact-offline,17,What are defenses against filesystem path traversal?,False,0.000,200
+redis-exact-offline,18,How should I canonicalize a user-supplied file path safely?,False,0.000,200
+redis-exact-offline,19,Why is blacklisting '..' insufficient to stop directory traversal?,False,0.000,200
+redis-exact-offline,20,What is a CSRF attack?,False,0.000,200
+redis-exact-offline,21,How do synchronizer tokens prevent Cross-Site Request Forgery?,False,0.000,200
+redis-exact-offline,22,Explain SameSite cookie attribute and CSRF.,False,0.000,200
+redis-exact-offline,23,Why does a double-submit cookie pattern mitigate CSRF?,False,0.000,200
+redis-exact-offline,24,How do single-page apps typically defend against CSRF?,False,0.000,200
+redis-exact-offline,25,What risks come from unrestricted file upload?,False,0.000,200
+redis-exact-offline,26,How should I validate uploaded files on a web server?,False,0.000,200
+redis-exact-offline,27,Can an image upload lead to remote code execution?,False,0.000,200
+redis-exact-offline,28,How do polyglot files bypass upload filters?,False,0.000,200
+redis-exact-offline,29,Why should uploaded files be served from a separate cookieless domain?,False,0.000,200
+redis-exact-offline,30,What is unsafe deserialization and why is it dangerous?,False,0.000,200
+redis-exact-offline,31,Explain how Java deserialization gadget chains work.,False,0.000,200
+redis-exact-offline,32,How do I safely deserialize untrusted data in Python?,False,0.000,200
+redis-exact-offline,33,Why is pickle a security disaster for untrusted input?,False,0.000,200
+redis-exact-offline,34,How does ysoserial weaponize Java deserialization vulnerabilities?,False,0.000,200
+redis-exact-offline,35,What is XML External Entity (XXE) injection?,False,0.000,200
+redis-exact-offline,36,How does XXE exfiltrate local files?,False,0.000,200
+redis-exact-offline,37,How do I disable external entities in libxml2?,False,0.000,200
+redis-exact-offline,38,What is the SSRF risk of an unchecked XXE parser?,False,0.000,200
+redis-exact-offline,39,Why are XML signatures a recurring source of XXE bugs?,False,0.000,200
+redis-exact-offline,40,What are incorrect file permission assignments?,False,0.000,200
+redis-exact-offline,41,Why is a world-writable /etc/shadow a problem?,False,0.000,200
+redis-exact-offline,42,How do I audit directory permissions on Linux?,False,0.000,200
+redis-exact-offline,43,What is the principle of least privilege for filesystem ACLs?,False,0.000,200
+redis-exact-offline,44,How does setuid amplify the impact of misassigned permissions?,False,0.000,200
+redis-exact-offline,45,What are the risks of hardcoded credentials in source code?,False,0.000,200
+redis-exact-offline,46,How should an application load secrets at runtime?,False,0.000,200
+redis-exact-offline,47,What tools scan for secrets committed to git?,False,0.000,200
+redis-exact-offline,48,Why is rotating leaked credentials more urgent than removing them from history?,False,0.000,200
+redis-exact-offline,49,How do secret managers like Vault or AWS Secrets Manager fit the secure-secrets story?,False,0.000,200
+redis-exact-offline,50,What counts as improper authentication?,False,0.000,200
+redis-exact-offline,51,How do I design a secure login flow?,False,0.000,200
+redis-exact-offline,52,What is credential stuffing and how do I mitigate it?,False,0.000,200
+redis-exact-offline,53,How does WebAuthn improve over password-based auth?,False,0.000,200
+redis-exact-offline,54,Why is account enumeration through login error messages a problem?,False,0.000,200
+redis-exact-offline,55,What does 'missing authentication for critical function' mean in practice?,False,0.000,200
+redis-exact-offline,56,How do attackers find unauthenticated admin endpoints?,False,0.000,200
+redis-exact-offline,57,How should a microservice enforce authentication on internal APIs?,False,0.000,200
+redis-exact-offline,58,Why is network-only segmentation not enough to protect privileged endpoints?,False,0.000,200
+redis-exact-offline,59,How does mTLS help close 'missing auth' gaps between services?,False,0.000,200
+redis-exact-offline,60,What does broken or risky cryptography mean?,False,0.000,200
+redis-exact-offline,61,Why is MD5 considered broken for password hashing?,False,0.000,200
+redis-exact-offline,62,"What is the right modern password hash (argon2, bcrypt, scrypt)?",False,0.000,200
+redis-exact-offline,63,Why should I never roll my own cryptographic primitives?,False,0.000,200
+redis-exact-offline,64,How does AES-GCM fail when nonces are reused?,False,0.000,200
+redis-exact-offline,65,What is Server-Side Request Forgery?,False,0.000,200
+redis-exact-offline,66,How does SSRF target cloud metadata services like 169.254.169.254?,False,0.000,200
+redis-exact-offline,67,How do I defend a URL-fetch endpoint against SSRF?,False,0.000,200
+redis-exact-offline,68,Why does an allow-list of hostnames beat a deny-list for SSRF?,False,0.000,200
+redis-exact-offline,69,How did Capital One's SSRF lead to a massive data breach?,False,0.000,200
+redis-exact-offline,70,What is an open redirect vulnerability?,False,0.000,200
+redis-exact-offline,71,How is an open redirect abused in phishing?,False,0.000,200
+redis-exact-offline,72,How do I validate a redirect target URL server-side?,False,0.000,200
+redis-exact-offline,73,Why does a relative-only redirect policy stop most open-redirect abuse?,False,0.000,200
+redis-exact-offline,74,How do attackers chain open redirects with OAuth flows to steal tokens?,False,0.000,200
+redis-exact-offline,75,What is a memory-safety vulnerability?,False,0.000,200
+redis-exact-offline,76,Explain buffer overflow versus heap overflow.,False,0.000,200
+redis-exact-offline,77,Why does Rust eliminate most memory-safety bugs?,False,0.000,200
+redis-exact-offline,78,How do use-after-free vulnerabilities lead to RCE?,False,0.000,200
+redis-exact-offline,79,Why is ASLR alone not sufficient against memory-corruption exploits?,False,0.000,200
+redis-exact-offline,80,What is a race-condition in a web application?,False,0.000,200
+redis-exact-offline,81,How does a TOCTOU bug happen in filesystem code?,False,0.000,200
+redis-exact-offline,82,How do I prevent race conditions in a payment endpoint?,False,0.000,200
+redis-exact-offline,83,Why are auth-state race conditions especially dangerous?,False,0.000,200
+redis-exact-offline,84,How does double-spending arise from a race condition in financial APIs?,False,0.000,200
+redis-exact-offline,85,What is a clickjacking attack?,False,0.000,200
+redis-exact-offline,86,How does the X-Frame-Options header defend against clickjacking?,False,0.000,200
+redis-exact-offline,87,Explain Content-Security-Policy frame-ancestors.,False,0.000,200
+redis-exact-offline,88,Why is JavaScript frame-busting insufficient against modern clickjacking?,False,0.000,200
+redis-exact-offline,89,How does UI redress fit into the broader clickjacking family of attacks?,False,0.000,200
+redis-exact-offline,90,What is a prototype pollution vulnerability in JavaScript?,False,0.000,200
+redis-exact-offline,91,How does an attacker poison Object.prototype?,False,0.000,200
+redis-exact-offline,92,How do I harden a Node.js app against prototype pollution?,False,0.000,200
+redis-exact-offline,93,Why is lodash.merge a recurring source of prototype pollution CVEs?,False,0.000,200
+redis-exact-offline,94,How can prototype pollution escalate to RCE in a server-side template engine?,False,0.000,200
+redis-exact-offline,95,What are the main OWASP Top 10 risks for 2021?,False,0.000,200
+redis-exact-offline,96,List the most common web application vulnerabilities.,False,0.000,200
+redis-exact-offline,97,Which OWASP categories cover injection attacks?,False,0.000,200
+redis-exact-offline,98,How did the OWASP Top 10 change between 2017 and 2021?,False,0.000,200
+redis-exact-offline,99,Why is broken access control the #1 OWASP risk in the 2021 list?,False,0.000,200
+redis-exact-offline,100,What is Insecure Direct Object Reference (IDOR)?,False,0.000,200
+redis-exact-offline,101,How do I detect IDOR vulnerabilities in a REST API?,False,0.000,200
+redis-exact-offline,102,Why are sequential numeric IDs a red flag for IDOR?,False,0.000,200
+redis-exact-offline,103,How do object capabilities and indirect references defend against IDOR?,False,0.000,200
+redis-exact-offline,104,Give a real-world example of an IDOR bug leading to a data breach.,False,0.000,200
+redis-exact-offline,105,What is a JWT confusion attack?,False,0.000,200
+redis-exact-offline,106,How does the alg=none JWT vulnerability work?,False,0.000,200
+redis-exact-offline,107,Why is RS256-to-HS256 confusion so dangerous for JWT verifiers?,False,0.000,200
+redis-exact-offline,108,How do I securely validate a JWT signature in Python?,False,0.000,200
+redis-exact-offline,109,What is the proper way to revoke a JWT before its expiry?,False,0.000,200
+redis-exact-offline,110,What is a Regular-expression Denial of Service (ReDoS) attack?,False,0.000,200
+redis-exact-offline,111,How does catastrophic backtracking blow up regex performance?,False,0.000,200
+redis-exact-offline,112,How do I detect ReDoS-vulnerable patterns in a codebase?,False,0.000,200
+redis-exact-offline,113,Why are nested quantifiers in regular expressions a ReDoS red flag?,False,0.000,200
+redis-exact-offline,114,How does Go's RE2 engine avoid ReDoS by design?,False,0.000,200
+redis-exact-offline,115,What is a mass-assignment vulnerability?,False,0.000,200
+redis-exact-offline,116,How does mass assignment let an attacker promote themselves to admin?,False,0.000,200
+redis-exact-offline,117,How do I prevent mass-assignment bugs in a Rails or Django app?,False,0.000,200
+redis-exact-offline,118,Why is a strict allow-list of fields the only safe defense for mass assignment?,False,0.000,200
+redis-exact-offline,119,Give an example of mass-assignment exploited in a profile-update endpoint.,False,0.000,200
+redis-exact-offline,120,What is broken access control?,False,0.000,200
+redis-exact-offline,121,How is broken access control different from broken authentication?,False,0.000,200
+redis-exact-offline,122,What patterns prevent privilege escalation in a multi-tenant SaaS?,False,0.000,200
+redis-exact-offline,123,Why do role checks at the controller layer alone fail in many real apps?,False,0.000,200
+redis-exact-offline,124,"How does centralized policy evaluation (OPA, Casbin) tighten access control?",False,0.000,200
+redis-exact-offline,125,What is a supply-chain typosquat attack on npm or PyPI?,False,0.000,200
+redis-exact-offline,126,How does an attacker exploit a typo in a package name to ship malware?,False,0.000,200
+redis-exact-offline,127,What tools detect typosquatted dependencies in a project?,False,0.000,200
+redis-exact-offline,128,Why is dependency pinning insufficient against typosquat attacks?,False,0.000,200
+redis-exact-offline,129,How did the event-stream incident shape modern supply-chain security?,False,0.000,200
+redis-exact-offline,130,What is a container escape vulnerability?,False,0.000,200
+redis-exact-offline,131,How does a misconfigured docker.sock mount enable container escape?,False,0.000,200
+redis-exact-offline,132,"What kernel features (capabilities, seccomp, AppArmor) constrain a containerized process?",False,0.000,200
+redis-exact-offline,133,Why is --privileged docker effectively equivalent to root on the host?,False,0.000,200
+redis-exact-offline,134,How do gVisor or Kata Containers reduce container-escape risk?,False,0.000,200
+redis-exact-offline,135,What are the security risks of running unprivileged eBPF programs?,False,0.000,200
+redis-exact-offline,136,How does the eBPF verifier prevent malicious bytecode from crashing the kernel?,False,0.000,200
+redis-exact-offline,137,Why is CAP_BPF still a powerful capability despite the verifier?,False,0.000,200
+redis-exact-offline,138,How have eBPF JIT bugs led to local privilege escalation CVEs?,False,0.000,200
+redis-exact-offline,139,What hardening would you apply to a host that runs untrusted eBPF programs?,False,0.000,200
+redis-exact-offline,140,How is RBAC commonly misconfigured in Kubernetes?,False,0.000,200
+redis-exact-offline,141,Why is a cluster-admin role binding to a service account dangerous?,False,0.000,200
+redis-exact-offline,142,How do attackers pivot from a low-privilege pod to cluster-admin in Kubernetes?,False,0.000,200
+redis-exact-offline,143,What is the right way to scope Kubernetes RBAC for CI/CD?,False,0.000,200
+redis-exact-offline,144,How does the Kubernetes Pod Security admission policy complement RBAC?,False,0.000,200
+redis-exact-offline,145,What was Spring4Shell and how did it lead to RCE?,False,0.000,200
+redis-exact-offline,146,Why was the Spring4Shell patch difficult for many teams to apply quickly?,False,0.000,200
+redis-exact-offline,147,How does Spring's data binding turn into a code-execution sink?,False,0.000,200
+redis-exact-offline,148,What logging or detection would catch Spring4Shell exploitation attempts?,False,0.000,200
+redis-exact-offline,149,How is Spring4Shell different from the older Spring RCE (CVE-2010-1622)?,False,0.000,200
+redis-exact-offline,150,What is the log4shell vulnerability?,False,0.000,200
+redis-exact-offline,151,How does the JNDI lookup in log4j 2.x lead to remote code execution?,False,0.000,200
+redis-exact-offline,152,Why is log4shell still being exploited years later in unpatched systems?,False,0.000,200
+redis-exact-offline,153,What mitigations short of upgrading log4j stop log4shell?,False,0.000,200
+redis-exact-offline,154,How do WAF rules attempt to block log4shell JNDI strings?,False,0.000,200
+redis-exact-offline,155,What is the ImageMagick 'ImageTragick' vulnerability?,False,0.000,200
+redis-exact-offline,156,How can a malicious image file trigger RCE through ImageMagick?,False,0.000,200
+redis-exact-offline,157,Why is restricting ImageMagick's policy.xml important?,False,0.000,200
+redis-exact-offline,158,How did ImageTragick affect web apps that processed user-uploaded images?,False,0.000,200
+redis-exact-offline,159,What sandboxing options exist for image-processing pipelines today?,False,0.000,200
+redis-exact-offline,160,What is an OAuth redirect-URI manipulation attack?,False,0.000,200
+redis-exact-offline,161,"Why must OAuth redirect_uri be an exact match, not a prefix match?",False,0.000,200
+redis-exact-offline,162,How does an open redirect inside an OAuth client enable token theft?,False,0.000,200
+redis-exact-offline,163,What is the PKCE extension and how does it protect public OAuth clients?,False,0.000,200
+redis-exact-offline,164,How can a malicious app phish OAuth consent in mobile-app deep-linking flows?,False,0.000,200
+redis-exact-offline,165,What is SAML XML Signature Wrapping (XSW)?,False,0.000,200
+redis-exact-offline,166,How does an attacker rearrange a signed SAML assertion to forge identity?,False,0.000,200
+redis-exact-offline,167,Why is XML canonicalization tricky and a source of SAML XSW bugs?,False,0.000,200
+redis-exact-offline,168,What library bugs have led to historic SAML XSW vulnerabilities?,False,0.000,200
+redis-exact-offline,169,How does a strict SAML validator defeat signature-wrapping attacks?,False,0.000,200
+redis-exact-offline,170,What are the common AWS S3 bucket misconfigurations?,False,0.000,200
+redis-exact-offline,171,How does a public-write S3 bucket lead to data tampering?,False,0.000,200
+redis-exact-offline,172,Why are S3 ACLs deprecated in favor of bucket policies?,False,0.000,200
+redis-exact-offline,173,How do attackers enumerate exposed S3 buckets at scale?,False,0.000,200
+redis-exact-offline,174,What AWS tooling automatically flags risky S3 configurations?,False,0.000,200
+redis-exact-offline,175,What is an MFA bypass attack?,False,0.000,200
+redis-exact-offline,176,How does SIM swapping defeat SMS-based MFA?,False,0.000,200
+redis-exact-offline,177,Why are push-notification MFA flows vulnerable to fatigue attacks?,False,0.000,200
+redis-exact-offline,178,How do phishing kits like Modlishka bypass TOTP?,False,0.000,200
+redis-exact-offline,179,"What MFA designs are resistant to phishing today (FIDO2, hardware keys)?",False,0.000,200
+redis-exact-offline,180,What is HTTP request smuggling?,False,0.000,200
+redis-exact-offline,181,How does CL.TE versus TE.CL request smuggling differ?,False,0.000,200
+redis-exact-offline,182,Why does request smuggling matter behind a chain of HTTP proxies?,False,0.000,200
+redis-exact-offline,183,How do attackers chain request smuggling with cache poisoning?,False,0.000,200
+redis-exact-offline,184,What mitigations stop request smuggling at the edge proxy?,False,0.000,200
+redis-exact-offline,185,What is web cache poisoning?,False,0.000,200
+redis-exact-offline,186,How does an unkeyed header lead to cached attacker content?,False,0.000,200
+redis-exact-offline,187,Why does cache poisoning often combine with XSS to be more damaging?,False,0.000,200
+redis-exact-offline,188,How do CDNs handle Vary headers and what goes wrong?,False,0.000,200
+redis-exact-offline,189,"What tools (Param Miner, etc.) help find cache-poisoning vectors?",False,0.000,200
+redis-exact-offline,190,What is server-side template injection (SSTI)?,False,0.000,200
+redis-exact-offline,191,How does Jinja2 template injection lead to RCE?,False,0.000,200
+redis-exact-offline,192,Why is rendering user input through a template engine inherently dangerous?,False,0.000,200
+redis-exact-offline,193,What sandbox escapes are known for popular template languages?,False,0.000,200
+redis-exact-offline,194,How do you detect SSTI in a black-box pentest?,False,0.000,200
+redis-exact-offline,195,What is an LDAP injection vulnerability?,False,0.000,200
+redis-exact-offline,196,How does an attacker bypass authentication via LDAP filter injection?,False,0.000,200
+redis-exact-offline,197,Why is escaping LDAP special characters trickier than SQL escaping?,False,0.000,200
+redis-exact-offline,198,What are safe APIs for parameterized LDAP queries?,False,0.000,200
+redis-exact-offline,199,How does an LDAP injection differ from an LDAP referral attack?,False,0.000,200
+kvraft-semantic-offline,0,What is Cross-Site Scripting and how do I prevent it?,False,485.613,200
+kvraft-semantic-offline,1,Explain XSS and common defenses.,False,8.132,200
+kvraft-semantic-offline,2,How does stored XSS differ from reflected XSS?,False,6.779,200
+kvraft-semantic-offline,3,Describe the dangers of DOM-based XSS in a single-page app.,False,9.578,200
+kvraft-semantic-offline,4,How do Content Security Policy headers mitigate cross-site scripting?,False,9.534,200
+kvraft-semantic-offline,5,What is SQL injection and how do I defend against it?,False,7.956,200
+kvraft-semantic-offline,6,Explain SQLi and how parameterized queries help.,False,6.123,200
+kvraft-semantic-offline,7,How does a blind SQL injection attack work?,False,8.341,200
+kvraft-semantic-offline,8,Describe SQL injection in plain terms for a junior developer.,False,6.819,200
+kvraft-semantic-offline,9,Why is SQLi still common despite ORMs and prepared statements?,False,6.127,200
+kvraft-semantic-offline,10,What is OS command injection?,False,5.325,200
+kvraft-semantic-offline,11,How do attackers exploit shell command injection vulnerabilities?,False,4.921,200
+kvraft-semantic-offline,12,Give an example of a command injection vulnerability in Python.,False,4.621,200
+kvraft-semantic-offline,13,How does shell metacharacter escaping prevent command injection?,False,5.238,200
+kvraft-semantic-offline,14,Why is os.system unsafe when called with user-controlled arguments?,False,6.566,200
+kvraft-semantic-offline,15,What is path traversal (directory traversal)?,False,6.307,200
+kvraft-semantic-offline,16,How does the ../../etc/passwd attack work?,False,5.977,200
+kvraft-semantic-offline,17,What are defenses against filesystem path traversal?,False,5.331,200
+kvraft-semantic-offline,18,How should I canonicalize a user-supplied file path safely?,False,5.742,200
+kvraft-semantic-offline,19,Why is blacklisting '..' insufficient to stop directory traversal?,False,7.185,200
+kvraft-semantic-offline,20,What is a CSRF attack?,False,9.679,200
+kvraft-semantic-offline,21,How do synchronizer tokens prevent Cross-Site Request Forgery?,False,10.180,200
+kvraft-semantic-offline,22,Explain SameSite cookie attribute and CSRF.,False,9.242,200
+kvraft-semantic-offline,23,Why does a double-submit cookie pattern mitigate CSRF?,False,7.463,200
+kvraft-semantic-offline,24,How do single-page apps typically defend against CSRF?,False,6.246,200
+kvraft-semantic-offline,25,What risks come from unrestricted file upload?,False,5.784,200
+kvraft-semantic-offline,26,How should I validate uploaded files on a web server?,False,5.026,200
+kvraft-semantic-offline,27,Can an image upload lead to remote code execution?,False,5.276,200
+kvraft-semantic-offline,28,How do polyglot files bypass upload filters?,False,5.162,200
+kvraft-semantic-offline,29,Why should uploaded files be served from a separate cookieless domain?,False,6.190,200
+kvraft-semantic-offline,30,What is unsafe deserialization and why is it dangerous?,False,5.405,200
+kvraft-semantic-offline,31,Explain how Java deserialization gadget chains work.,False,4.590,200
+kvraft-semantic-offline,32,How do I safely deserialize untrusted data in Python?,False,7.376,200
+kvraft-semantic-offline,33,Why is pickle a security disaster for untrusted input?,False,5.527,200
+kvraft-semantic-offline,34,How does ysoserial weaponize Java deserialization vulnerabilities?,False,7.819,200
+kvraft-semantic-offline,35,What is XML External Entity (XXE) injection?,False,9.062,200
+kvraft-semantic-offline,36,How does XXE exfiltrate local files?,False,8.591,200
+kvraft-semantic-offline,37,How do I disable external entities in libxml2?,False,5.682,200
+kvraft-semantic-offline,38,What is the SSRF risk of an unchecked XXE parser?,False,6.707,200
+kvraft-semantic-offline,39,Why are XML signatures a recurring source of XXE bugs?,False,8.306,200
+kvraft-semantic-offline,40,What are incorrect file permission assignments?,False,6.842,200
+kvraft-semantic-offline,41,Why is a world-writable /etc/shadow a problem?,False,5.713,200
+kvraft-semantic-offline,42,How do I audit directory permissions on Linux?,False,6.249,200
+kvraft-semantic-offline,43,What is the principle of least privilege for filesystem ACLs?,False,6.343,200
+kvraft-semantic-offline,44,How does setuid amplify the impact of misassigned permissions?,False,7.655,200
+kvraft-semantic-offline,45,What are the risks of hardcoded credentials in source code?,False,5.461,200
+kvraft-semantic-offline,46,How should an application load secrets at runtime?,False,5.762,200
+kvraft-semantic-offline,47,What tools scan for secrets committed to git?,False,6.074,200
+kvraft-semantic-offline,48,Why is rotating leaked credentials more urgent than removing them from history?,False,5.589,200
+kvraft-semantic-offline,49,How do secret managers like Vault or AWS Secrets Manager fit the secure-secrets story?,False,6.871,200
+kvraft-semantic-offline,50,What counts as improper authentication?,False,7.171,200
+kvraft-semantic-offline,51,How do I design a secure login flow?,False,6.405,200
+kvraft-semantic-offline,52,What is credential stuffing and how do I mitigate it?,False,5.186,200
+kvraft-semantic-offline,53,How does WebAuthn improve over password-based auth?,False,5.323,200
+kvraft-semantic-offline,54,Why is account enumeration through login error messages a problem?,False,4.797,200
+kvraft-semantic-offline,55,What does 'missing authentication for critical function' mean in practice?,False,5.739,200
+kvraft-semantic-offline,56,How do attackers find unauthenticated admin endpoints?,False,5.489,200
+kvraft-semantic-offline,57,How should a microservice enforce authentication on internal APIs?,False,4.846,200
+kvraft-semantic-offline,58,Why is network-only segmentation not enough to protect privileged endpoints?,False,6.695,200
+kvraft-semantic-offline,59,How does mTLS help close 'missing auth' gaps between services?,False,6.012,200
+kvraft-semantic-offline,60,What does broken or risky cryptography mean?,False,5.701,200
+kvraft-semantic-offline,61,Why is MD5 considered broken for password hashing?,False,6.388,200
+kvraft-semantic-offline,62,"What is the right modern password hash (argon2, bcrypt, scrypt)?",False,7.278,200
+kvraft-semantic-offline,63,Why should I never roll my own cryptographic primitives?,False,6.883,200
+kvraft-semantic-offline,64,How does AES-GCM fail when nonces are reused?,False,5.438,200
+kvraft-semantic-offline,65,What is Server-Side Request Forgery?,False,6.368,200
+kvraft-semantic-offline,66,How does SSRF target cloud metadata services like 169.254.169.254?,False,10.147,200
+kvraft-semantic-offline,67,How do I defend a URL-fetch endpoint against SSRF?,False,7.413,200
+kvraft-semantic-offline,68,Why does an allow-list of hostnames beat a deny-list for SSRF?,False,7.278,200
+kvraft-semantic-offline,69,How did Capital One's SSRF lead to a massive data breach?,False,6.350,200
+kvraft-semantic-offline,70,What is an open redirect vulnerability?,False,7.019,200
+kvraft-semantic-offline,71,How is an open redirect abused in phishing?,False,6.206,200
+kvraft-semantic-offline,72,How do I validate a redirect target URL server-side?,False,5.849,200
+kvraft-semantic-offline,73,Why does a relative-only redirect policy stop most open-redirect abuse?,False,7.153,200
+kvraft-semantic-offline,74,How do attackers chain open redirects with OAuth flows to steal tokens?,False,6.701,200
+kvraft-semantic-offline,75,What is a memory-safety vulnerability?,False,7.675,200
+kvraft-semantic-offline,76,Explain buffer overflow versus heap overflow.,False,7.410,200
+kvraft-semantic-offline,77,Why does Rust eliminate most memory-safety bugs?,False,6.195,200
+kvraft-semantic-offline,78,How do use-after-free vulnerabilities lead to RCE?,False,6.275,200
+kvraft-semantic-offline,79,Why is ASLR alone not sufficient against memory-corruption exploits?,False,5.470,200
+kvraft-semantic-offline,80,What is a race-condition in a web application?,False,5.666,200
+kvraft-semantic-offline,81,How does a TOCTOU bug happen in filesystem code?,False,7.327,200
+kvraft-semantic-offline,82,How do I prevent race conditions in a payment endpoint?,False,5.319,200
+kvraft-semantic-offline,83,Why are auth-state race conditions especially dangerous?,False,4.475,200
+kvraft-semantic-offline,84,How does double-spending arise from a race condition in financial APIs?,False,5.324,200
+kvraft-semantic-offline,85,What is a clickjacking attack?,False,5.644,200
+kvraft-semantic-offline,86,How does the X-Frame-Options header defend against clickjacking?,False,5.711,200
+kvraft-semantic-offline,87,Explain Content-Security-Policy frame-ancestors.,False,6.139,200
+kvraft-semantic-offline,88,Why is JavaScript frame-busting insufficient against modern clickjacking?,False,6.271,200
+kvraft-semantic-offline,89,How does UI redress fit into the broader clickjacking family of attacks?,False,6.022,200
+kvraft-semantic-offline,90,What is a prototype pollution vulnerability in JavaScript?,False,5.780,200
+kvraft-semantic-offline,91,How does an attacker poison Object.prototype?,False,5.605,200
+kvraft-semantic-offline,92,How do I harden a Node.js app against prototype pollution?,False,5.623,200
+kvraft-semantic-offline,93,Why is lodash.merge a recurring source of prototype pollution CVEs?,False,6.799,200
+kvraft-semantic-offline,94,How can prototype pollution escalate to RCE in a server-side template engine?,False,6.120,200
+kvraft-semantic-offline,95,What are the main OWASP Top 10 risks for 2021?,False,4.942,200
+kvraft-semantic-offline,96,List the most common web application vulnerabilities.,False,4.492,200
+kvraft-semantic-offline,97,Which OWASP categories cover injection attacks?,False,6.147,200
+kvraft-semantic-offline,98,How did the OWASP Top 10 change between 2017 and 2021?,False,8.707,200
+kvraft-semantic-offline,99,Why is broken access control the #1 OWASP risk in the 2021 list?,False,9.756,200
+kvraft-semantic-offline,100,What is Insecure Direct Object Reference (IDOR)?,False,5.071,200
+kvraft-semantic-offline,101,How do I detect IDOR vulnerabilities in a REST API?,False,5.547,200
+kvraft-semantic-offline,102,Why are sequential numeric IDs a red flag for IDOR?,False,5.404,200
+kvraft-semantic-offline,103,How do object capabilities and indirect references defend against IDOR?,False,5.834,200
+kvraft-semantic-offline,104,Give a real-world example of an IDOR bug leading to a data breach.,False,5.795,200
+kvraft-semantic-offline,105,What is a JWT confusion attack?,False,5.723,200
+kvraft-semantic-offline,106,How does the alg=none JWT vulnerability work?,False,5.211,200
+kvraft-semantic-offline,107,Why is RS256-to-HS256 confusion so dangerous for JWT verifiers?,False,6.370,200
+kvraft-semantic-offline,108,How do I securely validate a JWT signature in Python?,False,5.457,200
+kvraft-semantic-offline,109,What is the proper way to revoke a JWT before its expiry?,False,6.181,200
+kvraft-semantic-offline,110,What is a Regular-expression Denial of Service (ReDoS) attack?,False,6.286,200
+kvraft-semantic-offline,111,How does catastrophic backtracking blow up regex performance?,False,5.917,200
+kvraft-semantic-offline,112,How do I detect ReDoS-vulnerable patterns in a codebase?,False,6.212,200
+kvraft-semantic-offline,113,Why are nested quantifiers in regular expressions a ReDoS red flag?,False,9.005,200
+kvraft-semantic-offline,114,How does Go's RE2 engine avoid ReDoS by design?,False,8.515,200
+kvraft-semantic-offline,115,What is a mass-assignment vulnerability?,False,6.761,200
+kvraft-semantic-offline,116,How does mass assignment let an attacker promote themselves to admin?,False,7.897,200
+kvraft-semantic-offline,117,How do I prevent mass-assignment bugs in a Rails or Django app?,False,8.374,200
+kvraft-semantic-offline,118,Why is a strict allow-list of fields the only safe defense for mass assignment?,False,9.132,200
+kvraft-semantic-offline,119,Give an example of mass-assignment exploited in a profile-update endpoint.,False,9.632,200
+kvraft-semantic-offline,120,What is broken access control?,False,5.185,200
+kvraft-semantic-offline,121,How is broken access control different from broken authentication?,False,6.004,200
+kvraft-semantic-offline,122,What patterns prevent privilege escalation in a multi-tenant SaaS?,False,8.415,200
+kvraft-semantic-offline,123,Why do role checks at the controller layer alone fail in many real apps?,False,7.827,200
+kvraft-semantic-offline,124,"How does centralized policy evaluation (OPA, Casbin) tighten access control?",False,8.117,200
+kvraft-semantic-offline,125,What is a supply-chain typosquat attack on npm or PyPI?,False,7.766,200
+kvraft-semantic-offline,126,How does an attacker exploit a typo in a package name to ship malware?,False,11.562,200
+kvraft-semantic-offline,127,What tools detect typosquatted dependencies in a project?,False,8.923,200
+kvraft-semantic-offline,128,Why is dependency pinning insufficient against typosquat attacks?,False,8.587,200
+kvraft-semantic-offline,129,How did the event-stream incident shape modern supply-chain security?,False,7.087,200
+kvraft-semantic-offline,130,What is a container escape vulnerability?,False,8.899,200
+kvraft-semantic-offline,131,How does a misconfigured docker.sock mount enable container escape?,False,9.653,200
+kvraft-semantic-offline,132,"What kernel features (capabilities, seccomp, AppArmor) constrain a containerized process?",False,9.580,200
+kvraft-semantic-offline,133,Why is --privileged docker effectively equivalent to root on the host?,False,10.635,200
+kvraft-semantic-offline,134,How do gVisor or Kata Containers reduce container-escape risk?,False,9.593,200
+kvraft-semantic-offline,135,What are the security risks of running unprivileged eBPF programs?,False,6.395,200
+kvraft-semantic-offline,136,How does the eBPF verifier prevent malicious bytecode from crashing the kernel?,False,6.380,200
+kvraft-semantic-offline,137,Why is CAP_BPF still a powerful capability despite the verifier?,False,7.595,200
+kvraft-semantic-offline,138,How have eBPF JIT bugs led to local privilege escalation CVEs?,False,8.419,200
+kvraft-semantic-offline,139,What hardening would you apply to a host that runs untrusted eBPF programs?,False,7.338,200
+kvraft-semantic-offline,140,How is RBAC commonly misconfigured in Kubernetes?,False,6.231,200
+kvraft-semantic-offline,141,Why is a cluster-admin role binding to a service account dangerous?,False,5.244,200
+kvraft-semantic-offline,142,How do attackers pivot from a low-privilege pod to cluster-admin in Kubernetes?,False,8.744,200
+kvraft-semantic-offline,143,What is the right way to scope Kubernetes RBAC for CI/CD?,False,12.505,200
+kvraft-semantic-offline,144,How does the Kubernetes Pod Security admission policy complement RBAC?,False,7.725,200
+kvraft-semantic-offline,145,What was Spring4Shell and how did it lead to RCE?,False,8.912,200
+kvraft-semantic-offline,146,Why was the Spring4Shell patch difficult for many teams to apply quickly?,False,10.084,200
+kvraft-semantic-offline,147,How does Spring's data binding turn into a code-execution sink?,False,10.591,200
+kvraft-semantic-offline,148,What logging or detection would catch Spring4Shell exploitation attempts?,False,9.876,200
+kvraft-semantic-offline,149,How is Spring4Shell different from the older Spring RCE (CVE-2010-1622)?,False,10.304,200
+kvraft-semantic-offline,150,What is the log4shell vulnerability?,False,10.562,200
+kvraft-semantic-offline,151,How does the JNDI lookup in log4j 2.x lead to remote code execution?,False,10.502,200
+kvraft-semantic-offline,152,Why is log4shell still being exploited years later in unpatched systems?,False,10.639,200
+kvraft-semantic-offline,153,What mitigations short of upgrading log4j stop log4shell?,False,10.475,200
+kvraft-semantic-offline,154,How do WAF rules attempt to block log4shell JNDI strings?,False,9.112,200
+kvraft-semantic-offline,155,What is the ImageMagick 'ImageTragick' vulnerability?,False,8.948,200
+kvraft-semantic-offline,156,How can a malicious image file trigger RCE through ImageMagick?,False,10.731,200
+kvraft-semantic-offline,157,Why is restricting ImageMagick's policy.xml important?,False,8.009,200
+kvraft-semantic-offline,158,How did ImageTragick affect web apps that processed user-uploaded images?,False,9.354,200
+kvraft-semantic-offline,159,What sandboxing options exist for image-processing pipelines today?,False,8.691,200
+kvraft-semantic-offline,160,What is an OAuth redirect-URI manipulation attack?,False,9.692,200
+kvraft-semantic-offline,161,"Why must OAuth redirect_uri be an exact match, not a prefix match?",False,9.175,200
+kvraft-semantic-offline,162,How does an open redirect inside an OAuth client enable token theft?,True,9.045,200
+kvraft-semantic-offline,163,What is the PKCE extension and how does it protect public OAuth clients?,False,9.676,200
+kvraft-semantic-offline,164,How can a malicious app phish OAuth consent in mobile-app deep-linking flows?,False,8.136,200
+kvraft-semantic-offline,165,What is SAML XML Signature Wrapping (XSW)?,False,5.408,200
+kvraft-semantic-offline,166,How does an attacker rearrange a signed SAML assertion to forge identity?,False,6.532,200
+kvraft-semantic-offline,167,Why is XML canonicalization tricky and a source of SAML XSW bugs?,False,8.234,200
+kvraft-semantic-offline,168,What library bugs have led to historic SAML XSW vulnerabilities?,False,8.540,200
+kvraft-semantic-offline,169,How does a strict SAML validator defeat signature-wrapping attacks?,False,9.218,200
+kvraft-semantic-offline,170,What are the common AWS S3 bucket misconfigurations?,False,7.424,200
+kvraft-semantic-offline,171,How does a public-write S3 bucket lead to data tampering?,False,6.302,200
+kvraft-semantic-offline,172,Why are S3 ACLs deprecated in favor of bucket policies?,False,8.882,200
+kvraft-semantic-offline,173,How do attackers enumerate exposed S3 buckets at scale?,False,8.562,200
+kvraft-semantic-offline,174,What AWS tooling automatically flags risky S3 configurations?,False,8.120,200
+kvraft-semantic-offline,175,What is an MFA bypass attack?,False,7.999,200
+kvraft-semantic-offline,176,How does SIM swapping defeat SMS-based MFA?,False,8.638,200
+kvraft-semantic-offline,177,Why are push-notification MFA flows vulnerable to fatigue attacks?,False,8.416,200
+kvraft-semantic-offline,178,How do phishing kits like Modlishka bypass TOTP?,False,7.291,200
+kvraft-semantic-offline,179,"What MFA designs are resistant to phishing today (FIDO2, hardware keys)?",False,9.887,200
+kvraft-semantic-offline,180,What is HTTP request smuggling?,False,8.319,200
+kvraft-semantic-offline,181,How does CL.TE versus TE.CL request smuggling differ?,False,7.542,200
+kvraft-semantic-offline,182,Why does request smuggling matter behind a chain of HTTP proxies?,False,5.665,200
+kvraft-semantic-offline,183,How do attackers chain request smuggling with cache poisoning?,False,6.216,200
+kvraft-semantic-offline,184,What mitigations stop request smuggling at the edge proxy?,False,8.895,200
+kvraft-semantic-offline,185,What is web cache poisoning?,False,8.720,200
+kvraft-semantic-offline,186,How does an unkeyed header lead to cached attacker content?,False,8.407,200
+kvraft-semantic-offline,187,Why does cache poisoning often combine with XSS to be more damaging?,False,7.381,200
+kvraft-semantic-offline,188,How do CDNs handle Vary headers and what goes wrong?,False,8.215,200
+kvraft-semantic-offline,189,"What tools (Param Miner, etc.) help find cache-poisoning vectors?",False,10.535,200
+kvraft-semantic-offline,190,What is server-side template injection (SSTI)?,False,7.134,200
+kvraft-semantic-offline,191,How does Jinja2 template injection lead to RCE?,False,5.274,200
+kvraft-semantic-offline,192,Why is rendering user input through a template engine inherently dangerous?,False,5.633,200
+kvraft-semantic-offline,193,What sandbox escapes are known for popular template languages?,False,9.207,200
+kvraft-semantic-offline,194,How do you detect SSTI in a black-box pentest?,False,9.241,200
+kvraft-semantic-offline,195,What is an LDAP injection vulnerability?,False,9.151,200
+kvraft-semantic-offline,196,How does an attacker bypass authentication via LDAP filter injection?,False,7.030,200
+kvraft-semantic-offline,197,Why is escaping LDAP special characters trickier than SQL escaping?,False,7.794,200
+kvraft-semantic-offline,198,What are safe APIs for parameterized LDAP queries?,False,6.291,200
+kvraft-semantic-offline,199,How does an LDAP injection differ from an LDAP referral attack?,False,6.073,200
